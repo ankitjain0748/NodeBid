@@ -7,18 +7,31 @@ const pannaAdd = catchAsync(async (req, res, next) => {
         const userId = req?.user?.userId;
         const { type, status, date, digit, point } = req.body;
 
-  if (!userId) {
-    return res.status(400).json({
-      message: "User information not found in the request or userId is undefined",
-      status: false,
-    });
-  }
+        // if (!userId) {
+        //     return res.status(400).json({
+        //         message: "User information not found in the request or userId is undefined",
+        //         status: false,
+        //     });
+        // }
         if (!type || !status || !date || !digit || !point) {
             return res.status(400).json({ message: "All fields are required!" });
         }
 
+        // Validate digit based on type
+        if (type === "single_digit" || type === "double_digit") {
+            if (!/^\d{1}$/.test(digit)) {
+                return res.status(400).json({ message: "For digit type, digit must be a  digit (0-9)!" });
+            }
+        } else if (type === "single_panna") {
+            if (!/^\d{2}$/.test(digit)) {
+                return res.status(400).json({ message: "For paana type, digit must be a two-digit number (00-99)!" });
+            }
+        } else {
+            return res.status(400).json({ message: "Invalid type provided!" });
+        }
+
         // Parse the date
-        const parsedDate = moment(date, "DD-MM-YYYY").toDate();
+        const parsedDate = moment(date, "DD-MM-YYYY").add(1, 'day').utc().toDate();
         console.log("parsedDate", parsedDate);
 
         // Create a new record

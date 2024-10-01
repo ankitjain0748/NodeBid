@@ -4,7 +4,7 @@ const Panna = require("../Controller/Pannacontroller")
 const verifyUserToken = require('../middleware/Auth')
 
 
-router.post("/add",verifyUserToken, Panna.pannaAdd)
+router.post("/add", Panna.pannaAdd)
 router.get("/list", Panna.pannalist)
 
 
