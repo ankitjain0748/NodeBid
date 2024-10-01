@@ -3,9 +3,9 @@ const { successResponse, errorResponse, validationErrorResponse } = require('../
 
 // Signup API
 const signup = async (req, res) => {
-    const { mpin, phone, username,role } = req.body;
+    const { mpin, phone, username, role } = req.body;
     console.log("req", req.body);
-    if ( !mpin || !phone || !username  || !role) {
+    if (!mpin || !phone || !username || !role) {
         return validationErrorResponse(res, {
             mpin: 'MPIN is required',
             phone: 'Phone is required',
@@ -28,7 +28,7 @@ const signup = async (req, res) => {
             phone_digit: phoneStr?.slice(0, 4),
             username,
         });
-        
+
         await newUser.save();
         return successResponse(res, { newUser }, " please verify with OTP");
     } catch (error) {
@@ -41,7 +41,7 @@ const signup = async (req, res) => {
 const getotpsingup = async (req, res) => {
     const { id, phone_digit } = req.body;
     console.log("req", req.body);
-    
+
     if (!id || !phone_digit) {
         return validationErrorResponse(res, {
             id: 'User ID is required',
