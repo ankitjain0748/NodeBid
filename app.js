@@ -8,7 +8,9 @@ const cors = require("cors");
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
-
+app.get('/', (req, res) => {
+  res.json({ message: 'API data response' });
+});
 // API Routes
 app.use('/api', apiroute);
 app.use('/user', userroute);
