@@ -1,6 +1,7 @@
+const jwt = require("jsonwebtoken");
 const User = require('../Models/SignUp');
 
-const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 const SECRET_ACCESS = process.env && process.env.SECRET_ACCESS;
 const key = process && process.env && process.env.SECRET_ACCESS;
 const { successResponse, errorResponse, validationErrorResponse } = require('../Helper/Message');
@@ -83,7 +84,7 @@ const login = catchAsync(async (req, res, next) => {
     if (!user) {
         res.json({
             status: false,
-            message: "Invalid Email or password",
+            message: "Invalid mpin or phone",
         });
     }
     const token = await signToken({
@@ -99,26 +100,60 @@ const login = catchAsync(async (req, res, next) => {
 });
 
 const validateToken = catchAsync(async (req, res, next) => {
-    let authHeader = req.headers.Authorization || req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer")) {
-        let token = authHeader.split(" ")[1];
+    try {
+        const authHeader = req.headers.authorization; // Use lowercase
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ status: false, msg: "Token is missing or invalid." });
+        }
+
+        const token = authHeader.split(" ")[1];
         if (!token) {
-            next(new AppError("User is not authorized or token is missing", 403));
+            return res.status(403).json({ status: false, msg: "User is not authorized or token is missing." });
         }
-        const decode = await promisify(jwt.verify)(token, key);
-        if (decode) {
-            let result = await User.findById(decode.id);
-            req.user = result;
-            next();
-        } else {
-            next(new AppError("User is not authorized", 401));
+
+        // Verify the token
+        const decoded = await promisify(jwt.verify)(token, key);
+
+        // Find the user by ID from the decoded token
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(401).json({ status: false, msg: "User is not authorized." });
         }
-    } else {
-        next(res.status(401).json({ status: false, msg: "Token is missing." }));
+
+        req.user = user; // Attach the user to the request object
+        next(); // Call the next middleware
+    } catch (error) {
+        console.error("Token validation error:", error);
+        return res.status(401).json({ status: false, msg: "Invalid token." });
     }
 });
 
+
+const user = catchAsync(async (req, res) => {
+    if (req.user) {
+        res.json({
+            status: true,
+            user: req.user,
+        });
+    } else {
+        res.json({
+            status: false,
+            message: "You must be log in first !!.",
+        });
+    }
+});
+
+
+const userlist = catchAsync(
+    async (req, res) => {
+        const record = await User.find({})
+        res.json({
+            data: record,
+            status: 200,
+        });
+    }
+)
 module.exports = {
     signup,
-    getotpsingup, login, validateToken
+    getotpsingup, login, validateToken, user, userlist
 };

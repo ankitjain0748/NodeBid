@@ -1,4 +1,3 @@
-
 const jwt = require("jsonwebtoken");
 
 require('dotenv').config()
@@ -19,7 +18,7 @@ const verifyUserToken = (req, res, next) => {
         next();
     } catch (err) {
         res.json({
-            message: "Invaild token",
+            msg: "Invaild token",
             status: 401,
             err: err
         })
