@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 
 const signupSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
   mpin: {
     type: String,
     required: true,
