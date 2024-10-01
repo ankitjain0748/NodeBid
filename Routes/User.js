@@ -1,9 +1,12 @@
-const router = require('express').Router();
+const router =  require("express").Router();
 
-const usercontroller= require("../Controller/UserController")
 
-router.post("/singup", usercontroller.signup);
-router.post("/getotp", usercontroller.getotpsingup);
+const { validateToken, signup, login, getotpsingup } = require("../Controller/UserController")
+
+router.post("/singup", signup);
+router.post("/getotp", getotpsingup);
+router.post("/login", login);
+
 
 
 
