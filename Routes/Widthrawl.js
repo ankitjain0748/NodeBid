@@ -1,11 +1,11 @@
 const router = require('express').Router();
 
 const withdrawaldata = require("../Controller/Widthwral")
-const verifyUserToken = require('../middleware/Auth')
+const validateToken = require('../Controller/UserController')
 
 
-router.post("/withdrawal" ,withdrawaldata.withdrawalAdd)
-router.post("/success" ,withdrawaldata.successAdd)
+router.post("/withdrawal", validateToken, withdrawaldata.withdrawalAdd)
+router.post("/success", validateToken, withdrawaldata.successAdd)
 
 
 

@@ -15,6 +15,12 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.json({ message: 'API data response' });
 });
+
+const bodyParser = require('body-parser');
+// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.use(cors(corsOptions));
 // API Routes
 app.use('/api', apiroute);
 app.use('/user', userroute);

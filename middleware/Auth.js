@@ -18,7 +18,7 @@ const verifyUserToken = (req, res, next) => {
         next();
     } catch (err) {
         res.json({
-            msg: "Invaild token",
+            message: "Invaild token",
             status: 401,
             err: err
         })

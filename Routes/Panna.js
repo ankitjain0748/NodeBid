@@ -1,10 +1,11 @@
 const router = require('express').Router();
 
 const Panna = require("../Controller/Pannacontroller")
-const verifyUserToken = require('../middleware/Auth')
+const validateToken = require('../Controller/UserController')
 
 
-router.post("/add", verifyUserToken ,Panna.pannaAdd)
+
+router.post("/add", validateToken ,Panna.pannaAdd)
 router.get("/list", Panna.pannalist)
 
 

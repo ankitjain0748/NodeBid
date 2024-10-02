@@ -99,34 +99,26 @@ const login = catchAsync(async (req, res, next) => {
     });
 });
 
-const validateToken = catchAsync(async (req, res, next) => {
-    try {
-        const authHeader = req.headers.authorization; // Use lowercase
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({ status: false, msg: "Token is missing or invalid." });
-        }
-
-        const token = authHeader.split(" ")[1];
-        if (!token) {
-            return res.status(403).json({ status: false, msg: "User is not authorized or token is missing." });
-        }
-
-        // Verify the token
-        const decoded = await promisify(jwt.verify)(token, key);
-
-        // Find the user by ID from the decoded token
-        const user = await User.findById(decoded.id);
-        if (!user) {
-            return res.status(401).json({ status: false, msg: "User is not authorized." });
-        }
-
-        req.user = user; // Attach the user to the request object
-        next(); // Call the next middleware
-    } catch (error) {
-        console.error("Token validation error:", error);
-        return res.status(401).json({ status: false, msg: "Invalid token." });
+exports.validateToken = catchAsync(async (req, res, next) => {
+    let authHeader = req.headers.Authorization || req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      let token = authHeader.split(" ")[1];
+      if (!token) {
+        next(new AppError("User is not authorized or token is missing", 403));
+      }
+      const decode = await promisify(jwt.verify)(token, key);
+      if (decode) {
+        let result = await User.findById(decode.id);
+        req.user = result;
+        next();
+      } else {
+        next(new AppError("User is not authorized", 401));
+      }
+    } else {
+      next(res.status(401).json({ status: false, msg: "Token is missing." }));
     }
-});
+  });
+  
 
 
 const user = catchAsync(async (req, res) => {
