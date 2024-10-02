@@ -6,6 +6,7 @@ const { promisify } = require("util");
 const SECRET_ACCESS = process.env.SECRET_ACCESS;
 const { successResponse, errorResponse, validationErrorResponse } = require('../Helper/Message');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require("../utils/AppError");
 
 // Sign Token
 // const signToken = async (payload) => {
@@ -16,7 +17,7 @@ const catchAsync = require('../utils/catchAsync');
 const signToken = async (payload) => {
     const token = jwt.sign(payload, SECRET_ACCESS, { expiresIn: "5h" });
     return token;
-  };
+};
 // User Signup
 const signup = async (req, res) => {
     const { mpin, phone, username, role } = req.body;
@@ -101,24 +102,38 @@ const login = catchAsync(async (req, res, next) => {
 
 // Token Validation Middleware
 const validateToken = catchAsync(async (req, res, next) => {
+    console.log("req.headers.Authorization",req.headers?.authorization)
     let authHeader = req.headers.Authorization || req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer")) {
-        let token = authHeader.split(" ")[1];
+
+    // Check if the Authorization header is present and starts with "Bearer"
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+        let token = authHeader.split(" ")[1]; // Get the token from the header
+
+        console.log("token",token)
         if (!token) {
-            return next(new Error("User is not authorized or token is missing"));
+            return next(new AppError("Token is missing", 403));
         }
-        const decode = await promisify(jwt.verify)(token, SECRET_ACCESS);
-        if (decode) {
-            let result = await User.findById(decode.id);
-            req.user = result; // Fix: Changed req.User to req.user
-            next();
-        } else {
-            return next(new Error("User is not authorized"));
+
+        try {
+            const decode = await promisify(jwt.verify)(token, key); // Verify the token
+            console.log(decode)
+            const result = await User.findById(decode.id); // Find the user
+            console.log(result)
+
+            if (!result) {
+                return next(new AppError("User not found", 404));
+            }
+
+            req.user = result; // Set the user in the request object
+            next(); // Proceed to the next middleware
+        } catch (err) {
+            return next(new AppError("Invalid token", 401)); // Handle invalid token
         }
     } else {
-        return res.status(401).json({ status: false, msg: "Token is missing." });
+        return next(res.status(401).json({ status: false, msg: "Token is missing." }));
     }
 });
+
 
 // Get User Information
 const user = catchAsync(async (req, res) => {

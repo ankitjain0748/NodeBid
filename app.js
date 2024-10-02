@@ -34,10 +34,6 @@ const corsOptions = {
 
 
 app.use(cors(corsOptions));
-// Example GET route
-app.get('/', (req, res) => {
-  res.json({ message: 'API data response' });
-});
 
 // Start server
 const PORT = process.env.PORT || 5000;
