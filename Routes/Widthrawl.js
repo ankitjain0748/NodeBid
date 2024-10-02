@@ -4,8 +4,8 @@ const withdrawaldata = require("../Controller/Widthwral")
 const validateToken = require('../Controller/UserController')
 
 
-router.post("/withdrawal", validateToken, withdrawaldata.withdrawalAdd)
-router.post("/success", validateToken, withdrawaldata.successAdd)
+router.post("/withdrawal", withdrawaldata.withdrawalAdd)
+router.post("/success", withdrawaldata.successAdd)
 
 
 

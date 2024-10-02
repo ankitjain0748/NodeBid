@@ -1,13 +1,11 @@
 const router = require('express').Router();
+const { validateToken } = require('../Controller/UserController');
+const { pannaAdd, pannalist } = require("../Controller/Pannacontroller");
 
-const Panna = require("../Controller/Pannacontroller")
-const validateToken = require('../Controller/UserController')
+// Route to add a new Panna record
+router.post("/add", pannaAdd);
 
+// Route to list all Panna records
+router.get("/list", pannalist);
 
-
-router.post("/add", validateToken ,Panna.pannaAdd)
-router.get("/list", Panna.pannalist)
-
-
-
-module.exports = router
+module.exports = router;
