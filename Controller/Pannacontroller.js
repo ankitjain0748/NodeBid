@@ -21,7 +21,7 @@ const pannaAdd = catchAsync(async (req, res, next) => {
             if (!/^\d{1}$/.test(digit)) {
                 return res.status(400).json({ message: "For digit type, digit must be a  digit (0-9)!" });
             }
-        } else if (type === "single_panna") {
+        } else if (type === "single_panna"  || type === "double_panna") {
             if (!/^\d{2}$/.test(digit)) {
                 return res.status(400).json({ message: "For paana type, digit must be a two-digit number (00-99)!" });
             }
