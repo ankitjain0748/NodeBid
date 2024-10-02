@@ -6,13 +6,12 @@ const pannaAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?.userId;
         const { type, status, date, digit, point } = req.body;
-
-        // if (!userId) {
-        //     return res.status(400).json({
-        //         message: "User information not found in the request or userId is undefined",
-        //         status: false,
-        //     });
-        // }
+        if (!userId) {
+            return res.status(400).json({
+                message: "User information not found in the request or userId is undefined",
+                status: false,
+            });
+        }
         if (!type || !status || !date || !digit || !point) {
             return res.status(400).json({ message: "All fields are required!" });
         }
