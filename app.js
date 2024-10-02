@@ -5,6 +5,8 @@ const express = require('express');
 const apiroute = require('./Routes/ContactUs');
 const userroute = require("./Routes/User")
 const pannaroute = require("./Routes/Panna")
+const widthrwal = require("./Routes/Widthrawl")
+
 const cors = require("cors");
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -17,12 +19,12 @@ app.get('/', (req, res) => {
 app.use('/api', apiroute);
 app.use('/user', userroute);
 app.use("/panna", pannaroute)
+app.use("/payment", widthrwal)
 
 const corsOptions = {
   origin: '*',// Update this with your frontend URL
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 
