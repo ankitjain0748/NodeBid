@@ -18,9 +18,10 @@ app.use('/api', apiroute);
 app.use('/user', userroute);
 app.use("/panna", pannaroute)
 const corsOptions = {
-  origin: '*',
+  origin: 'https://frontendbid.vercel.app', // Update this with your frontend URL
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
