@@ -36,6 +36,11 @@ const signup = async (req, res) => {
             return validationErrorResponse(res, { username: 'Username already exists' });
         }
 
+        const existingPhone = await User.findOne({ phone });
+        if (existingPhone) {
+            return validationErrorResponse(res, { phone: 'phone already exists' });
+        }
+
         const phoneStr = String(phone);
         const newUser = new User({
             role,
@@ -102,14 +107,14 @@ const login = catchAsync(async (req, res, next) => {
 
 // Token Validation Middleware
 const validateToken = catchAsync(async (req, res, next) => {
-    console.log("req.headers.Authorization",req.headers?.authorization)
+    console.log("req.headers.Authorization", req.headers?.authorization)
     let authHeader = req.headers.Authorization || req.headers.authorization;
 
     // Check if the Authorization header is present and starts with "Bearer"
     if (authHeader && authHeader.startsWith("Bearer ")) {
         let token = authHeader.split(" ")[1]; // Get the token from the header
 
-        console.log("token",token)
+        console.log("token", token)
         if (!token) {
             return next(new AppError("Token is missing", 403));
         }

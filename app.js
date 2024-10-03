@@ -6,6 +6,8 @@ const apiroute = require('./Routes/ContactUs');
 const userroute = require("./Routes/User")
 const pannaroute = require("./Routes/Panna")
 const widthrwal = require("./Routes/Widthrawl")
+const marketing = require("./Routes/Market")
+
 
 const cors = require("cors");
 const app = express();
@@ -25,6 +27,8 @@ app.use('/api', apiroute);
 app.use('/user', userroute);
 app.use("/panna", pannaroute)
 app.use("/payment", widthrwal)
+app.use("/market", marketing)
+
 
 const corsOptions = {
   origin: '*',// Update this with your frontend URL
