@@ -115,7 +115,7 @@ const validateToken = catchAsync(async (req, res, next) => {
         }
 
         try {
-            const decode = await promisify(jwt.verify)(token, key); // Verify the token
+            const decode = await promisify(jwt.verify)(token, SECRET_ACCESS); // Verify the token
             console.log(decode)
             const result = await User.findById(decode.id); // Find the user
             console.log(result)

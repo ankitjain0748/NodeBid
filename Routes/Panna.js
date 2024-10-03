@@ -3,7 +3,7 @@ const { validateToken } = require('../Controller/UserController');
 const { pannaAdd, pannalist } = require("../Controller/Pannacontroller");
 
 // Route to add a new Panna record
-router.post("/add", pannaAdd);
+router.post("/add",  validateToken, pannaAdd);
 
 // Route to list all Panna records
 router.get("/list", pannalist);
