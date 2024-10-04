@@ -16,4 +16,6 @@ router.get("/list", userlist);
 // Get User Information Route (Requires Authentication)
 router.get("/", validateToken, user);
 
+router.post("/update-status", updateUserStatus)
+
 module.exports = router;

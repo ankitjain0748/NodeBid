@@ -29,6 +29,11 @@ const signupSchema = mongoose.Schema({
   amount: {
     type: Number,
   },
+  user_status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
 });
 
 module.exports = mongoose.model("Signup", signupSchema);
