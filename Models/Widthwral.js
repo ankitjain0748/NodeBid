@@ -1,7 +1,7 @@
 const mongoose  = require("mongoose")
 
 
-const schema= mongoose.Schema({
+const paymentschema= mongoose.Schema({
     upi_id: {
         type: String,
       },
@@ -18,4 +18,4 @@ const schema= mongoose.Schema({
 
 })
 
-module.exports = mongoose.model("payment", schema);
+module.exports = mongoose.model("payment", paymentschema);
