@@ -4,16 +4,18 @@ const mongoose  = require("mongoose")
 const schema= mongoose.Schema({
     upi_id: {
         type: String,
-        required: true,
       },
       user_id: {
         type: String,
       },
       amount: {
-        type: String,
+        type: Number,
         required: true,
       },
+      transcation_id: {
+        type: String,
+      }
 
 })
 
-module.exports = mongoose.model("widthrwal_payment", schema);
+module.exports = mongoose.model("payment", schema);

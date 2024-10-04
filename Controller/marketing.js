@@ -1,4 +1,5 @@
 const marketing = require("../Models/Marketing")
+
 const catchAsync = require("../utils/catchAsync")
 
 exports.MarketingAdd = catchAsync(async (req, res, next) => {
@@ -19,7 +20,8 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
 });
 
 
-exports.marketlist = catchAsync(async (req, res) => {
+
+exports.MarketList = catchAsync(async (req, res) => {
     const records = await marketing.find({});
     res.json({
         data: records,

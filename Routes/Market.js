@@ -2,8 +2,8 @@ const router = require('express').Router();
 
 const Marketing = require("../Controller/marketing")
 
-router.post("/add", Marketing.MarketingAdd);
-router.get("/list", Marketing.marketlist);
+router.post("/marketadd", Marketing.MarketingAdd);
+router.get("/marketlist", Marketing.MarketList);
 
 
 

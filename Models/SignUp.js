@@ -26,6 +26,9 @@ const signupSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  amount: {
+    type: Number,
+  },
 });
 
 module.exports = mongoose.model("Signup", signupSchema);
