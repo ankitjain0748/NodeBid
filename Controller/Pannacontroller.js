@@ -23,7 +23,8 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
     if (point) {
         if (!/^\d{4}$/.test(point)) {
             return res.status(400).json({ message: "For type 'point', digit must be a four digit!" });
-        }}
+        }
+    }
 
     // Validate digit based on type
     if (type === "single_digit") {
