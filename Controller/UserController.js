@@ -74,8 +74,10 @@ const getotpsingup = async (req, res) => {
         if (!existingUser) {
             return validationErrorResponse(res, { message: 'Invalid ID or phone digit' });
         }
+        const token = await signToken({ id: id });
 
-        return successResponse(res, { existingUser }, "User verified successfully");
+
+        return successResponse(res, { existingUser, token }, "User verified successfully");
     } catch (error) {
         console.error(error);
         return errorResponse(res, "Error verifying user");
