@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { validateToken, signup, login, getotpsingup, userlist, user } = require("../Controller/UserController");
+const { validateToken, signup, login, getotpsingup, userlist, user,updateUserStatus } = require("../Controller/UserController");
 
 // User Signup Route
 router.post("/signup", signup);
