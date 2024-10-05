@@ -14,6 +14,9 @@ const paymentschema= mongoose.Schema({
       },
       transcation_id: {
         type: String,
+      },
+      payment_status: {
+        type: Number,
       }
 
 })

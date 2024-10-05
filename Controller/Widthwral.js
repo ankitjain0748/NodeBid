@@ -37,6 +37,7 @@ const successAdd = catchAsync(async (req, res, next) => {
             transcation_id,
             amount,
             userId,
+            payment_status:1
         });
         await record.save();
 
@@ -92,6 +93,7 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
             upi_id,
             amount,
             userId,
+            payment_status :0
         });
         await record.save();
 

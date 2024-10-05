@@ -1,21 +1,42 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const MarketingSchema = mongoose.Schema({
-    market_status: {
-        type: String,
-        required: true,
+const marketingSchema = new mongoose.Schema({
+  market_status: {
+    type: String,
+    required: true,
+  },
+  open_time: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (v) {
+        // Regex to match time format HH:MM (24-hour format)
+        return /^([01]\d|2[0-3]):?([0-5]\d)$/.test(v);
+      },
+      message: props => `${props.value} is not a valid time format!`
     },
-    name: {
-        type: String,
-        required: true,
+  },
+  close_time: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (v) {
+        // Regex to match time format HH:MM (24-hour format)
+        return /^([01]\d|2[0-3]):?([0-5]\d)$/.test(v);
+      },
+      message: props => `${props.value} is not a valid time format!`
     },
-    market_type: {
-        type: String,
-        required: true,
-    },
-    open_time: { type: Date, default: Date.now() },
-    close_time: { type: Date, default: Date.now() },
-
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  market_type: {
+    type: String,
+    required: true,
+  }
 });
 
-module.exports = mongoose.model("marketing", MarketingSchema);
+const Marketing = mongoose.model('marketing', marketingSchema);
+
+module.exports = Marketing;
