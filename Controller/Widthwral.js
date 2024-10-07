@@ -43,11 +43,12 @@ const successAdd = catchAsync(async (req, res, next) => {
 
         res.status(200).json({
             data: record,
+            status:true,
             message: "Transaction successful, amount added to balance",
         });
     } catch (error) {
         console.error(error); // Log the error for debugging
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(false).json({ message: "Internal Server Error" });
     }
 });
 
@@ -100,6 +101,7 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
         res.status(200).json({
             data: record,
             message: "Withdrawal successful",
+            status:true
         });
     } catch (error) {
         console.error(error); // Log the error for debugging

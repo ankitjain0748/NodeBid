@@ -20,10 +20,6 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         return res.status(400).json({ message: "All fields are required!" });
     }
 
-    // Validate bid_point
-    if (!/^\d{5}$/.test(bid_point)) {
-        return res.status(400).json({ message: "For type 'bid_point', it must be a five-digit number!" });
-    }
 
     // Validate digit based on type
     if (type === "half_sangam" || type === "full_sangam") {

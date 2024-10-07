@@ -51,7 +51,12 @@ const signup = async (req, res) => {
         });
 
         await newUser.save();
-        return successResponse(res, { newUser }, "Please verify with OTP");
+
+        res.status(200).json({
+            data: newUser,
+            message: "Please verify with OTP",
+            status:true
+        });
     } catch (error) {
         console.error(error);
         return errorResponse(res, "Error creating user");
