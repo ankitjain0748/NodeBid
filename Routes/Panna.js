@@ -5,6 +5,6 @@ const { SangamAdd } = require("../Controller/sanagam");
 
 router.post("/add", validateToken, pannaAdd);
 router.post("/sangam/add", validateToken, SangamAdd);
-router.get("/list", validateToken, pannalist);
+router.get("/list", pannalist);
 
 module.exports = router;
