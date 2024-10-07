@@ -65,10 +65,11 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
 
 // Function to list all Panna records
 exports.pannalist = catchAsync(async (req, res) => {
-    const records = await Panna.find({});
+    const records = await Panna.find({}).sort({ date: -1 });
 
     res.status(200).json({
         data: records,
         message: "Records fetched successfully.",
     });
 });
+
