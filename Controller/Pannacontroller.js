@@ -5,7 +5,7 @@ const catchAsync = require("../utils/catchAsync");
 // Function to add a new Panna record
 exports.pannaAdd = catchAsync(async (req, res, next) => {
     const userId = req?.user?._id;
-    const { type, status, date, digit, point } = req.body;
+    const { type, status, date, digit, point,marketId } = req.body;
 
     // User ID validation
     if (!userId) {
@@ -50,7 +50,8 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         date: parsedDate.add(1, 'day').utc().toDate(),
         digit,
         point,
-        userId
+        userId,
+        marketId
     });
 
     await record.save();

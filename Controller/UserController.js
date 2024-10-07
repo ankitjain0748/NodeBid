@@ -211,11 +211,47 @@ const updateUserStatus = catchAsync(async (req, res) => {
     }
 });
 
+
+// Controller to reset MPIN
+const resetMpin = async (req, res) => {
+    try {
+      const { Id, newMpin } = req.body;
+  
+      // Validate input
+      if (!Id || !newMpin) {
+        return res.status(400).json({ message: 'User ID and new MPIN are required' });
+      }
+  
+      // Fetch user from the database
+      const user = await User.findById({_id :Id});
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Check if the new MPIN matches the old MPIN
+      if (user.mpin === newMpin) {
+        return res.status(400).json({ message: 'New MPIN cannot be the same as the old MPIN' });
+      }
+  
+      // Update user's MPIN in the database
+      user.mpin = newMpin;
+      await user.save();
+  
+      res.status(200).json({ message: 'MPIN reset successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
+
+
 // Exporting Functions
 module.exports = {
     signup,
     getotpsingup,
     login,
+    resetMpin,
     user,
     validateToken,
     updateUserStatus,

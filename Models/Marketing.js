@@ -34,6 +34,9 @@ const marketingSchema = new mongoose.Schema({
   market_type: {
     type: String,
     required: true,
+  },
+  result: {
+    type: Number,
   }
 });
 

@@ -5,7 +5,7 @@ const catchAsync = require("../utils/catchAsync");
 
 exports.SangamAdd = catchAsync(async (req, res, next) => {
     const userId = req?.user?._id;
-    const { type, status, date, open_panna, open_panna_sum, close_panna, bid_point } = req.body;
+    const { type, status, date, open_panna, open_panna_sum, close_panna, bid_point,marketId } = req.body;
 
     // User ID validation
     if (!userId) {
@@ -45,7 +45,8 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         open_panna_sum,
         close_panna,
         bid_point,
-        userId
+        userId,
+        marketId,
     });
 
     await record.save();

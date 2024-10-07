@@ -5,6 +5,9 @@ const panna = mongoose.Schema({
         type: String,
         required: true,
     },
+    marketId: {
+        type: String,
+    },
     status: {
         type: Boolean,
         required: true,

@@ -9,6 +9,9 @@ const sangamschema = mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    marketId: {
+        type: String,
+    },
     open_panna: {
         type: Number,
         required: true,
