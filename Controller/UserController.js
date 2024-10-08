@@ -215,15 +215,15 @@ const updateUserStatus = catchAsync(async (req, res) => {
 // Controller to reset MPIN
 const resetMpin = async (req, res) => {
     try {
-      const { Id, newMpin } = req.body;
+      const { phone, newMpin } = req.body;
   
       // Validate input
-      if (!Id || !newMpin) {
-        return res.status(400).json({ message: 'User ID and new MPIN are required' });
+      if (!phone || !newMpin) {
+        return res.status(400).json({ message: 'User phone and new MPIN are required' });
       }
   
       // Fetch user from the database
-      const user = await User.findById({_id :Id});
+      const user = await User.findById({phone :phone});
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
