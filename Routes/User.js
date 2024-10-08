@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { validateToken, signup, login, getotpsingup, userlist, user,updateUserStatus, resetMpin } = require("../Controller/UserController");
+const { validateToken, signup, login, getotpsingup, userlist, user,updateUserStatus, resetMpin, userlistStatus } = require("../Controller/UserController");
 
 // User Signup Route
 router.post("/signup", signup);
@@ -12,6 +12,9 @@ router.post("/login", login);
 
 // List Users Route (Requires Authentication)
 router.get("/list", userlist);
+
+router.get("/list/status", userlistStatus);
+
 
 // Get User Information Route (Requires Authentication)
 router.get("/", validateToken, user);

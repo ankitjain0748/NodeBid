@@ -2,7 +2,6 @@ const Contactmodel = require("../Models/Contact")
 
 exports.contact = async (req, res) => {
     try {
-        console.log("req?.body", req.body);
         const { email, name, phone, message } = req.body;
 
         const data = new Contactmodel({
@@ -13,7 +12,6 @@ exports.contact = async (req, res) => {
         });
 
         const result = await data.save();
-        console.log("result", result)
         if (result) {
             res.json({
                 status: 200,
