@@ -57,6 +57,7 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
     await record.save();
 
     res.status(201).json({
+        status:true,
         data: record,
         message: "Panna record added successfully.",
     });

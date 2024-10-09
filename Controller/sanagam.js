@@ -53,6 +53,7 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
 
     res.status(201).json({
         data: record,
+        status:true,
         message: "Sangam record added successfully.",
     });
 });
