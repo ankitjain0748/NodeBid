@@ -105,7 +105,7 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
         });
     } catch (error) {
         console.error(error); // Log the error for debugging
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(false).json({ message: "Internal Server Error" });
     }
 });
 
@@ -114,11 +114,12 @@ const amountget = catchAsync(async (req, res) => {
         const records = await withdrawal.find({});
         res.json({
             data: records,
+            status:true,
             status: 200,
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(false).json({ message: "Internal Server Error" });
     }
 });
 
