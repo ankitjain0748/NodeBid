@@ -70,6 +70,7 @@ exports.pannalist = catchAsync(async (req, res) => {
 
     res.status(200).json({
         data: records,
+        status:true,
         message: "Records fetched successfully.",
     });
 });

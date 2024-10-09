@@ -160,7 +160,8 @@
         const users = await User.find({ role: 'user' });
         res.json({
             data: users,
-            status: 200,
+
+            status: true,
         });
     });
 
@@ -170,7 +171,7 @@
         const users = await User.find({ user_status: 'inactive' });
         res.json({
             data: users,
-            status: 200,
+            status: true,
         });
     });
 
@@ -240,10 +241,10 @@
             user.mpin = newMpin;
             await user.save();
 
-            res.status(200).json({ message: 'MPIN reset successfully' });
+            res.status(true).json({ message: 'MPIN reset successfully' });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(false).json({ message: 'Internal server error' });
         }
     };
 

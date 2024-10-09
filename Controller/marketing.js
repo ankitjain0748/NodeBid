@@ -15,6 +15,7 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
 
     res.status(201).json({
         data: record,
+        status:true,
         message: "Market record added successfully.",
     });
 });
