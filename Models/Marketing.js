@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const marketingSchema = new mongoose.Schema({
   market_status: {
     type: String,
-    required: true,
+  },
+  market_type: {
+    type: String,
+    default :"dehli"
   },
   open_time: {
     type: String,
@@ -33,7 +36,6 @@ const marketingSchema = new mongoose.Schema({
   },
   market_type: {
     type: String,
-    required: true,
   },
   result: {
     type: Number,
