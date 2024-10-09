@@ -29,3 +29,44 @@ exports.MarketList = catchAsync(async (req, res) => {
         status: 200,
     });
 });
+
+
+exports.MarketDelete = async (req, res) => {
+    try {
+        const { Id } = req.body;
+        
+        // Check if Id exists
+        if (!Id) {
+            return res.status(400).json({
+                message: "Market ID is required",
+                status: 400,
+            });
+        }
+
+        // Find and delete the record
+        const record = await marketing.findOneAndDelete({ _id: Id });
+
+        // Check if the record exists
+        if (!record) {
+            return res.status(404).json({
+                message: "Market not found",
+                status: 404,
+            });
+        }
+
+        // Successfully deleted
+        res.json({
+            message: "Market deleted successfully",
+            data: record,
+            status: 200,
+        });
+    } catch (error) {
+        // Log the error and send the response
+        console.error("Error in MarketDelete:", error);
+        res.status(500).json({
+            message: "An error occurred while deleting the market",
+            error: error.message,
+            status: 500,
+        });
+    }
+};
