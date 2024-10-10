@@ -110,17 +110,29 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
 
 const amountget = catchAsync(async (req, res) => {
     try {
-        const records = await withdrawal.find({});
-        res.json({
+
+        const records = await withdrawal.find();
+
+        if (!records || records.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "No records found",
+            });
+        }
+
+        res.status(200).json({
+            status: true,
             data: records,
-            status:true,
-            status: 200,
         });
     } catch (error) {
         console.error(error);
-        res.status(false).json({ message: "Internal Server Error" });
+        res.status(500).json({ 
+            status: false, 
+            message: "Internal Server Error" 
+        });
     }
 });
+
 
 module.exports = {
     withdrawalAdd,
