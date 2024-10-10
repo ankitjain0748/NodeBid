@@ -222,10 +222,10 @@ const userlistStatus = catchAsync(async (req, res) => {
 
 const updateUserStatus = catchAsync(async (req, res) => {
     try {
-        const { _id, status } = req.body;
-
+        const { _id, user_status } = req.body;
+        console.log(req.body)
         // Validate the input
-        if (!_id || !status) {
+        if (!_id || !user_status) {
             return res.status(400).json({
                 message: "User ID and status are required.",
                 status: false,
@@ -242,11 +242,11 @@ const updateUserStatus = catchAsync(async (req, res) => {
         }
 
         // Update the user's status
-        user.user_status = status;
+        user.user_status = user_status;
         await user.save();
 
         res.status(200).json({
-            message: `User status updated to ${status}`,
+            message: `User status updated to ${user_status}`,
             status: true,
             data: user,
         });

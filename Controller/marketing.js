@@ -62,6 +62,39 @@ exports.MarketList = catchAsync(async (req, res) => {
     }
 });
 
+exports.MarketListId = catchAsync(async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                status: false,
+                message: "Market ID is required.",
+            });
+        }
+
+        const record = await marketing.findById({ _id: id });
+
+        if (!record || record.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "No markets found.",
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            data: record,
+            message: "Markets fetched successfully.",
+        });
+    } catch (error) {
+        console.error("Error fetching markets:", error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+});
 
 exports.MarketDelete = catchAsync(async (req, res, next) => {
     try {
