@@ -21,7 +21,7 @@ router.get("/", validateToken, user);
 
 router.post("/update-status", updateUserStatus)
 
-router.post("/reset-mpin", validateToken, resetMpin)
+router.post("/reset-mpin", resetMpin)
 
 
 module.exports = router;

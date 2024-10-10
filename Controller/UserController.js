@@ -51,7 +51,7 @@
 
             await newUser.save();
 
-            res.status(200).json({
+            res.status(false).json({
                 data: newUser,
                 message: "Please verify with OTP",
                 status: true
