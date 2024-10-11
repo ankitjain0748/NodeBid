@@ -65,7 +65,6 @@ exports.MarketList = catchAsync(async (req, res) => {
 exports.MarketListId = catchAsync(async (req, res) => {
     try {
         const { id } = req.params;
-
         if (!id) {
             return res.status(400).json({
                 status: false,
