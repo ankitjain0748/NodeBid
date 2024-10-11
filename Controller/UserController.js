@@ -195,7 +195,8 @@ const userlist = catchAsync(async (req, res) => {
 
 const UserListId = catchAsync(async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; // Destructure 'id' from params
+        console.log(id)
         if (!id) {
             return res.status(400).json({
                 status: false,
@@ -203,15 +204,17 @@ const UserListId = catchAsync(async (req, res) => {
             });
         }
 
-        const record = await User.findById({ _id: id });
+        // Fetch user by ID
+        const record = await User.findById(id);
 
-        if (!record || record.length === 0) {
+        if (!record) {
             return res.status(404).json({
                 status: false,
                 message: "No User found.",
             });
         }
 
+        // Respond with the user data
         res.status(200).json({
             status: true,
             data: record,
@@ -225,6 +228,7 @@ const UserListId = catchAsync(async (req, res) => {
         });
     }
 });
+
 
 
 
