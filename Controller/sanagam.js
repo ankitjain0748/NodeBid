@@ -6,7 +6,7 @@ const catchAsync = require("../utils/catchAsync");
 exports.SangamAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
-        const { type, status, date, open_panna, open_panna_sum, close_panna, bid_point, marketId } = req.body;
+        const { type, status, date, open_panna, close_panna, bid_point, marketId } = req.body;
 
         // User ID validation
         if (!userId) {
@@ -17,7 +17,7 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         }
 
         // Required fields validation
-        if (!type || !status || !date || !open_panna || !open_panna_sum || !close_panna || !bid_point) {
+        if (!type || !status || !date || !open_panna || !close_panna || !bid_point) {
             return res.status(400).json({
                 status: false,
                 message: "All fields are required!",
@@ -55,7 +55,6 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
             status,
             date: parsedDate.add(1, 'day').utc().toDate(), // Adjust date as per requirement
             open_panna,
-            open_panna_sum,
             close_panna,
             bid_point,
             userId,

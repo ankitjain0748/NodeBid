@@ -271,7 +271,9 @@ const resetMpin = async (req, res) => {
         }
 
         // Fetch user from the database
-        const user = await User.findById({ phone: phone });
+        const user = await User.findOne({ phone: phone });
+        
+        // Check if user exists
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -281,16 +283,17 @@ const resetMpin = async (req, res) => {
             return res.status(400).json({ message: 'New MPIN cannot be the same as the old MPIN' });
         }
 
-        // Update user's MPIN in the database
-        user.mpin = newMpin;
-        await user.save();
+        // Update user's MPIN in the database (consider hashing it)
+        user.mpin = newMpin; // You may want to hash this before saving
+        await user.save(); // Ensure 'user' is a valid Mongoose document
 
-        res.status(true).json({ message: 'MPIN reset successfully' });
+        return res.status(200).json({ message: 'MPIN reset successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(false).json({ message: 'Internal server error' });
+        console.error('Error resetting MPIN:', error); // More descriptive error logging
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
 
 
 
