@@ -188,9 +188,42 @@ const userlist = catchAsync(async (req, res) => {
     const users = await User.find({ role: 'user' });
     res.json({
         data: users,
-
         status: true,
     });
+});
+
+
+const UserListId = catchAsync(async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({
+                status: false,
+                message: "User ID is required.",
+            });
+        }
+
+        const record = await User.findById({ _id: id });
+
+        if (!record || record.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "No User found.",
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            data: record,
+            message: "User fetched successfully.",
+        });
+    } catch (error) {
+        console.error("Error fetching User:", error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
 });
 
 
@@ -307,5 +340,6 @@ module.exports = {
     validateToken,
     updateUserStatus,
     userlist,
+    UserListId,
     userlistStatus
 };

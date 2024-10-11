@@ -136,7 +136,7 @@ exports.MarketDelete = catchAsync(async (req, res, next) => {
 
 exports.MarketUpdate = catchAsync(async (req, res, next) => {
     try {
-        const { Id, market_status, open_time, close_time, name, market_type, result } = req.body;
+        const { Id, market_status, open_time, close_time, name, market_type, result, game_rate } = req.body;
 
         // Check if Id exists in the request
         if (!Id) {
@@ -146,13 +146,7 @@ exports.MarketUpdate = catchAsync(async (req, res, next) => {
             });
         }
 
-        // Validate required fields for updating
-        if (!open_time || !close_time || !name) {
-            return res.status(400).json({
-                status: false,
-                message: "Open time, close time, and name are required to update the market!",
-            });
-        }
+        
 
         // Find the market by ID and update its fields
         const updatedRecord = await marketing.findByIdAndUpdate(

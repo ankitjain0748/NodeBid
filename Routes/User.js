@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { validateToken, signup, login, getotpsingup, userlist, user,updateUserStatus, resetMpin, userlistStatus } = require("../Controller/UserController");
+const { validateToken, signup, login, getotpsingup, userlist, user,updateUserStatus, resetMpin, userlistStatus, UserListId } = require("../Controller/UserController");
 
 // User Signup Route
 router.post("/signup", signup);
@@ -22,6 +22,9 @@ router.get("/", validateToken, user);
 router.post("/update-status", updateUserStatus)
 
 router.post("/reset-mpin", resetMpin)
+
+router.get(`/userlist/:id`, UserListId);
+
 
 
 module.exports = router;

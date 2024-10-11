@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 const marketingSchema = new mongoose.Schema({
   market_status: {
     type: String,
+    enum: ["active", "inactive"],
+    default: "active",
   },
   market_type: {
     type: String,
-    default :"dehli"
+    default: "dehli"
   },
   open_time: {
     type: String,
@@ -38,6 +40,9 @@ const marketingSchema = new mongoose.Schema({
     type: String,
   },
   result: {
+    type: Number,
+  },
+  game_rate: {
     type: Number,
   }
 });
