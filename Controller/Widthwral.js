@@ -36,13 +36,13 @@ const successAdd = catchAsync(async (req, res, next) => {
             transcation_id,
             amount,
             userId,
-            payment_status:1
+            payment_status: 1
         });
         await record.save();
 
         res.status(200).json({
             data: record,
-            status:true,
+            status: true,
             message: "Transaction successful, amount added to balance",
         });
     } catch (error) {
@@ -50,9 +50,9 @@ const successAdd = catchAsync(async (req, res, next) => {
         res.status(false).json({ message: "Internal Server Error" });
     }
 });
-
 const withdrawalAdd = catchAsync(async (req, res, next) => {
     try {
+        console.log(req.body);
         const userId = req?.user?._id;
         const { upi_id, amount } = req.body;
 
@@ -67,11 +67,20 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
         }
 
         // Retrieve the user's account information
-        const user = await User.findById(userId);
+        const user = await User.findById({ _id: userId });
+        console.log("user", user);
 
         if (!user) {
             return res.status(404).json({
                 message: "User not found",
+                status: false,
+            });
+        }
+
+        // Check if the user has an amount key
+        if (typeof user.amount === 'undefined') {
+            return res.status(400).json({
+                message: "User balance information is missing",
                 status: false,
             });
         }
@@ -84,29 +93,29 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
             });
         }
 
-        // Deduct the amount from the user's balance
         user.amount -= amount;
         await user.save();
 
         // Create a new withdrawal record
-        const record = new withdrawal({
+        const record = new Withdrawal({
             upi_id,
             amount,
             userId,
-            payment_status :0
+            payment_status: 0,
         });
         await record.save();
 
         res.status(200).json({
             data: record,
             message: "Withdrawal successful",
-            status:true
+            status: true,
         });
     } catch (error) {
         console.error(error); // Log the error for debugging
-        res.status(false).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: "Internal Server Error" }); // Use status code 500 for server errors
     }
 });
+
 
 const amountget = catchAsync(async (req, res) => {
     try {
@@ -126,9 +135,9 @@ const amountget = catchAsync(async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
-            status: false, 
-            message: "Internal Server Error" 
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
         });
     }
 });
