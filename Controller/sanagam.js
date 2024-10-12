@@ -28,20 +28,20 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         // }
 
         // Validate the type and corresponding open_panna and close_panna fields
-        if (type === "half_sangam" || type === "full_sangam") {
-            const pannaPattern = /^\d{3}$/; // three-digit number validation (000-999)
-            if (!pannaPattern.test(open_panna) || !pannaPattern.test(close_panna)) {
-                return res.status(400).json({
-                    status: false,
-                    message: `For type '${type}', open_panna and close_panna must both be three-digit numbers (000-999).`,
-                });
-            }
-        } else {
-            return res.status(400).json({
-                status: false,
-                message: "Invalid type provided!",
-            });
-        }
+        // if (type === "half_sangam" || type === "full_sangam") {
+        //     const pannaPattern = /^\d{3}$/; // three-digit number validation (000-999)
+        //     if (!pannaPattern.test(open_panna)) {
+        //         return res.status(400).json({
+        //             status: false,
+        //             message: `For type '${type}', open_panna and close_panna must both be three-digit numbers (000-999).`,
+        //         });
+        //     }
+        // } else {
+        //     return res.status(400).json({
+        //         status: false,
+        //         message: "Invalid type provided!",
+        //     });
+        // }
 
         // Parse the date with moment.js and validate
         const parsedDate = moment(date, "DD-MM-YYYY", true);
