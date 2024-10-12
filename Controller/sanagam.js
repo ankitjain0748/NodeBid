@@ -5,6 +5,7 @@ const catchAsync = require("../utils/catchAsync");
 
 exports.SangamAdd = catchAsync(async (req, res, next) => {
     try {
+        console.log(req.body)
         const userId = req?.user?._id;
         const { type, status, date, open_panna, close_panna, bid_point, marketId } = req.body;
 
@@ -17,12 +18,12 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         }
 
         // Required fields validation
-        if (!type || !status || !date || !open_panna || !close_panna || !bid_point) {
-            return res.status(400).json({
-                status: false,
-                message: "All fields are required!",
-            });
-        }
+        // if (!type || !status || !date || !open_panna || !close_panna || !bid_point) {
+        //     return res.status(400).json({
+        //         status: false,
+        //         message: "All fields are required!",
+        //     });
+        // }
 
         // Validate the type and corresponding open_panna and close_panna fields
         if (type === "half_sangam" || type === "full_sangam") {

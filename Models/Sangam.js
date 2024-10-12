@@ -18,7 +18,6 @@ const sangamschema = mongoose.Schema({
     },
     open_panna_sum: {
         type: Number,
-        required: true,
     },
     userId: String,
     close_panna: {
