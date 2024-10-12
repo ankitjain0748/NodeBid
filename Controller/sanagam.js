@@ -1,6 +1,7 @@
 const sanagam = require("../Models/Sangam");
 const User = require("../Models/SignUp")
 const moment = require('moment');
+const GameRate = require("../Models/GameRate")
 const catchAsync = require("../utils/catchAsync");
 
 
@@ -93,6 +94,55 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
 
     } catch (error) {
         console.error("Error adding Sangam record:", error);
+
+        // Send error response
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+});
+
+
+
+
+exports.GameRateAdd = catchAsync(async (req, res, next) => {
+    try {
+        const { single_digit_rate,
+            doble_digit_rate,
+            Single_panna_rate,
+            Doble_panna_rate,
+            Triple_panna_rate,
+            full_sangam,
+            Half_sangam,
+            Digit_on,
+            dp_motors } = req.body;
+
+
+        // Create and save the new record
+        const record = new GameRate({
+            single_digit_rate,
+            doble_digit_rate,
+            Single_panna_rate,
+            Doble_panna_rate,
+            Triple_panna_rate,
+            full_sangam,
+            Half_sangam,
+            Digit_on,
+            dp_motors
+        });
+
+        await record.save();
+
+        // Send success response
+        res.status(201).json({
+            data: record,
+            status: true,
+            message: "GameRate record added successfully.",
+        });
+
+    } catch (error) {
+        console.error("Error adding GameRate record:", error);
 
         // Send error response
         res.status(500).json({
