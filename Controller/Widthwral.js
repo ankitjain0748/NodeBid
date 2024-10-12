@@ -100,7 +100,7 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
         const record = new withdrawal({
             upi_id,
             amount,
-            userId,
+            user_id: userId,
             payment_status: 0,
         });
         await record.save();
