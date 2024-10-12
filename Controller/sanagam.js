@@ -6,9 +6,7 @@ const catchAsync = require("../utils/catchAsync");
 
 exports.SangamAdd = catchAsync(async (req, res, next) => {
     try {
-        console.log(req.body)
         const userId = req?.user?._id;
-        console.log(userId)
         const { type, status, date, open_panna, close_panna, bid_point, marketId } = req.body;
 
         // User ID validation
@@ -53,7 +51,6 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         }
 
         const user = await User.findById(userId);
-        console.log(user)
         if (!user) {
             return res.status(404).json({
                 status: false,

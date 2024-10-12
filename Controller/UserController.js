@@ -3,6 +3,7 @@
 const jwt = require("jsonwebtoken");
 const User = require('../Models/SignUp');
 const Payment = require('../Models/Widthwral');
+const profile = require("../Models/Profile")
 
 const { promisify } = require("util");
 const SECRET_ACCESS = process.env.SECRET_ACCESS;
@@ -187,7 +188,6 @@ const userlist = catchAsync(async (req, res) => {
 const UserListId = catchAsync(async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(id)
         if (!id) {
             return res.status(400).json({
                 status: false,
@@ -250,7 +250,6 @@ const userlistStatus = catchAsync(async (req, res) => {
 const updateUserStatus = catchAsync(async (req, res) => {
     try {
         const { _id, user_status } = req.body;
-        console.log(req.body)
         if (!_id || !user_status) {
             return res.status(400).json({
                 message: "User ID and status are required.",
@@ -319,7 +318,7 @@ const UserListIdDelete = catchAsync(async (req, res, next) => {
         if (!Id) {
             return res.status(400).json({
                 status: false,
-                message: "Market ID is required.",
+                message: "User ID is required.",
             });
         }
 
@@ -328,17 +327,17 @@ const UserListIdDelete = catchAsync(async (req, res, next) => {
         if (!record) {
             return res.status(404).json({
                 status: false,
-                message: "Market not found.",
+                message: "user not found.",
             });
         }
 
         res.status(200).json({
             status: true,
             data: record,
-            message: "Market deleted successfully.",
+            message: "User deleted successfully.",
         });
     } catch (error) {
-        console.error("Error deleting market record:", error);
+        console.error("Error deleting user record:", error);
         res.status(500).json({
             status: false,
             message: "Internal Server Error. Please try again later.",
@@ -348,12 +347,83 @@ const UserListIdDelete = catchAsync(async (req, res, next) => {
 
 
 
+
+const ProfileAdd = catchAsync(async (req, res, next) => {
+    try {
+        const userId = req?.user?._id;
+        const {
+            Profile_name,
+            Upi_id,
+            whatapps,
+            phone,
+            profile_email,
+            marchant_id,
+            min_widthrawal_rate,
+            min_desposite_rate,
+            min_bid_amount,
+            welcome_bouns,
+            Withrawal,
+            App_link,
+            message,
+            Video_link } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                message: "User information not found in the request or userId is undefined",
+                status: false,
+            });
+        }
+
+        const user = await User.findById({ _id: userId });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                status: false,
+            });
+        }
+        const record = new profile({
+            Profile_name,
+            Upi_id,
+            whatapps,
+            phone,
+            profile_email,
+            marchant_id,
+            min_widthrawal_rate,
+            min_desposite_rate,
+            min_bid_amount,
+            welcome_bouns,
+            Withrawal,
+            App_link,
+            message,
+            Video_link,
+            userId: userId
+        });
+
+        await record.save();
+
+        res.status(200).json({
+            status: true,
+            data: record,
+            message: "Profile record added successfully.",
+        });
+    } catch (error) {
+        console.error("Error adding Profile record:", error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+});
+
+
 module.exports = {
     signup,
     getotpsingup,
     login,
     resetMpin,
     user,
+    ProfileAdd,
     UserListIdDelete,
     validateToken,
     updateUserStatus,

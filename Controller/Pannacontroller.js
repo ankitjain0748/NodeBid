@@ -7,7 +7,6 @@ const  User = require("../Models/SignUp");
 exports.pannaAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
-        console.log(req.body)
         const { type, status, date, digit, point, marketId } = req.body;
 
         // User ID validation

@@ -77,7 +77,6 @@ const AdminsuccessAdd = catchAsync(async (req, res, next) => {
 
         // Add the amount to the user's existing balance
         user.amount = (user.amount || 0) + amountToAdd;
-        console.log("Updated user amount:", user.amount);
         await user.save();
 
         // Create a new withdrawal record
@@ -107,7 +106,6 @@ const AdminsuccessAdd = catchAsync(async (req, res, next) => {
 
 const withdrawalAdd = catchAsync(async (req, res, next) => {
     try {
-        console.log(req.body);
         const userId = req?.user?._id;
         const { upi_id, amount } = req.body;
 
@@ -123,7 +121,6 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
 
         // Retrieve the user's account information
         const user = await User.findById({ _id: userId });
-        console.log("user", user);
 
         if (!user) {
             return res.status(404).json({
@@ -183,7 +180,6 @@ const adminwithdrawalAdd = catchAsync(async (req, res, next) => {
 
         // Retrieve the user's account information
         const user = await User.findById({ _id: user_id });
-        console.log("user", user);
 
         if (!user) {
             return res.status(404).json({
