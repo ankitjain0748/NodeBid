@@ -1,11 +1,13 @@
 const Panna = require("../Models/Panna");
 const moment = require('moment');
 const catchAsync = require("../utils/catchAsync");
+const  User = require("../Models/SignUp");
 
 // Function to add a new Panna record
 exports.pannaAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
+        console.log(req.body)
         const { type, status, date, digit, point, marketId } = req.body;
 
         // User ID validation
@@ -17,12 +19,12 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         }
 
         // Required fields validation
-        if (!type || !status || !date || !digit || !point) {
-            return res.status(400).json({
-                status: false,
-                message: "All fields are required!",
-            });
-        }
+        // if (!type || !status || !date || !digit || !point) {
+        //     return res.status(400).json({
+        //         status: false,
+        //         message: "All fields are required!",
+        //     });
+        // }
 
         // Validate digit based on type
         if (type === "single_digit") {
@@ -62,6 +64,27 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
             });
         }
 
+        // Retrieve the user's account information
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found.",
+            });
+        }
+
+        // Check if the user has enough balance to place the bet
+        if (user.amount < point) {
+            return res.status(400).json({
+                status: false,
+                message: "Insufficient balance to place the bet.",
+            });
+        }
+
+        // Deduct the points from the user's amount
+        user.amount -= point;
+        await user.save();
+
         // Create a new record
         const record = new Panna({
             type,
@@ -91,6 +114,7 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         });
     }
 });
+
 
 
 

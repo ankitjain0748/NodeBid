@@ -1,4 +1,5 @@
 const sanagam = require("../Models/Sangam");
+const User = require("../Models/SignUp")
 const moment = require('moment');
 const catchAsync = require("../utils/catchAsync");
 
@@ -7,6 +8,7 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
     try {
         console.log(req.body)
         const userId = req?.user?._id;
+        console.log(userId)
         const { type, status, date, open_panna, close_panna, bid_point, marketId } = req.body;
 
         // User ID validation
@@ -49,6 +51,27 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
                 message: "Invalid date format. Please use DD-MM-YYYY.",
             });
         }
+
+        const user = await User.findById(userId);
+        console.log(user)
+        if (!user) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found.",
+            });
+        }
+
+        // Check if the user has enough balance to place the bet
+        if (user.amount < bid_point) {
+            return res.status(400).json({
+                status: false,
+                message: "Insufficient balance to place the bet.",
+            });
+        }
+
+        // Deduct the points from the user's amount
+        user.amount -= bid_point;
+        await user.save();
 
         // Create and save the new record
         const record = new sanagam({
