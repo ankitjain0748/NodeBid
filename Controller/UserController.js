@@ -2,6 +2,8 @@
 
 const jwt = require("jsonwebtoken");
 const User = require('../Models/SignUp');
+const Payment = require('../Models/Widthwral');
+
 const { promisify } = require("util");
 const SECRET_ACCESS = process.env.SECRET_ACCESS;
 const { successResponse, errorResponse, validationErrorResponse } = require('../Helper/Message');
@@ -92,7 +94,6 @@ const login = catchAsync(async (req, res, next) => {
     try {
         const { phone, mpin } = req.body;
 
-        // Check if phone and mpin are provided
         if (!phone || !mpin) {
             return res.status(400).json({
                 status: false,
@@ -100,26 +101,20 @@ const login = catchAsync(async (req, res, next) => {
             });
         }
 
-        // Find user by phone and mpin
         const user = await User.findOne({ phone, mpin });
 
-        // If user not found or mpin is incorrect
         if (!user) {
             return res.status(400).json({
                 status: false,
                 message: "Invalid MPIN or phone",
             });
         }
-
-        // Check if user status is inactive
         if (user.user_status === 'inactive') {
             return res.status(403).json({
                 status: false,
                 message: "Your account is inactive. Please contact support.",
             });
         }
-
-        // Sign a token if user is valid and active
         const token = await signToken({ id: user._id });
 
         res.status(200).json({
@@ -138,29 +133,27 @@ const login = catchAsync(async (req, res, next) => {
 });
 
 
-// Token Validation Middleware
 const validateToken = catchAsync(async (req, res, next) => {
     let authHeader = req.headers.Authorization || req.headers.authorization;
 
-    // Check if the Authorization header is present and starts with "Bearer"
     if (authHeader && authHeader.startsWith("Bearer ")) {
-        let token = authHeader.split(" ")[1]; // Get the token from the header
+        let token = authHeader.split(" ")[1];
         if (!token) {
             return next(new AppError("Token is missing", 403));
         }
 
         try {
-            const decode = await promisify(jwt.verify)(token, SECRET_ACCESS); // Verify the token
-            const result = await User.findById(decode.id); // Find the user
+            const decode = await promisify(jwt.verify)(token, SECRET_ACCESS);
+            const result = await User.findById(decode.id);
 
             if (!result) {
                 return next(new AppError("User not found", 404));
             }
 
-            req.user = result; // Set the user in the request object
-            next(); // Proceed to the next middleware
+            req.user = result;
+            next();
         } catch (err) {
-            return next(new AppError("Invalid token", 401)); // Handle invalid token
+            return next(new AppError("Invalid token", 401));
         }
     } else {
         return next(res.status(401).json({ status: false, msg: "Token is missing." }));
@@ -168,7 +161,6 @@ const validateToken = catchAsync(async (req, res, next) => {
 });
 
 
-// Get User Information
 const user = catchAsync(async (req, res) => {
     if (req.user) {
         res.json({
@@ -183,7 +175,6 @@ const user = catchAsync(async (req, res) => {
     }
 });
 
-// List Users
 const userlist = catchAsync(async (req, res) => {
     const users = await User.find({ role: 'user' });
     res.json({
@@ -195,7 +186,7 @@ const userlist = catchAsync(async (req, res) => {
 
 const UserListId = catchAsync(async (req, res) => {
     try {
-        const { id } = req.params; // Destructure 'id' from params
+        const { id } = req.params;
         console.log(id)
         if (!id) {
             return res.status(400).json({
@@ -204,8 +195,8 @@ const UserListId = catchAsync(async (req, res) => {
             });
         }
 
-        // Fetch user by ID
         const record = await User.findById(id);
+        const payment = await Payment.find({ user_id: id });
 
         if (!record) {
             return res.status(404).json({
@@ -213,11 +204,10 @@ const UserListId = catchAsync(async (req, res) => {
                 message: "No User found.",
             });
         }
-
-        // Respond with the user data
         res.status(200).json({
             status: true,
             data: record,
+            payment: payment,
             message: "User fetched successfully.",
         });
     } catch (error) {
@@ -261,7 +251,6 @@ const updateUserStatus = catchAsync(async (req, res) => {
     try {
         const { _id, user_status } = req.body;
         console.log(req.body)
-        // Validate the input
         if (!_id || !user_status) {
             return res.status(400).json({
                 message: "User ID and status are required.",
@@ -269,7 +258,6 @@ const updateUserStatus = catchAsync(async (req, res) => {
             });
         }
 
-        // Find the user by ID
         const user = await User.findById(_id);
         if (!user) {
             return res.status(404).json({
@@ -278,7 +266,6 @@ const updateUserStatus = catchAsync(async (req, res) => {
             });
         }
 
-        // Update the user's status
         user.user_status = user_status;
         await user.save();
 
@@ -288,7 +275,7 @@ const updateUserStatus = catchAsync(async (req, res) => {
             data: user,
         });
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error(error);
         res.status(500).json({
             message: "Internal Server Error",
             status: false,
@@ -302,45 +289,72 @@ const resetMpin = async (req, res) => {
     try {
         const { phone, newMpin } = req.body;
 
-        // Validate input
         if (!phone || !newMpin) {
             return res.status(400).json({ message: 'User phone and new MPIN are required' });
         }
 
-        // Fetch user from the database
         const user = await User.findOne({ phone: phone });
-        
-        // Check if user exists
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
-        // Check if the new MPIN matches the old MPIN
         if (user.mpin === newMpin) {
             return res.status(400).json({ message: 'New MPIN cannot be the same as the old MPIN' });
         }
 
-        // Update user's MPIN in the database (consider hashing it)
-        user.mpin = newMpin; // You may want to hash this before saving
-        await user.save(); // Ensure 'user' is a valid Mongoose document
+        user.mpin = newMpin;
+        await user.save();
 
         return res.status(200).json({ message: 'MPIN reset successfully' });
     } catch (error) {
-        console.error('Error resetting MPIN:', error); // More descriptive error logging
+        console.error('Error resetting MPIN:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
+const UserListIdDelete = catchAsync(async (req, res, next) => {
+    try {
+        const { Id } = req.body;
+
+        if (!Id) {
+            return res.status(400).json({
+                status: false,
+                message: "Market ID is required.",
+            });
+        }
+
+        const record = await User.findOneAndDelete({ _id: Id });
+
+        if (!record) {
+            return res.status(404).json({
+                status: false,
+                message: "Market not found.",
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            data: record,
+            message: "Market deleted successfully.",
+        });
+    } catch (error) {
+        console.error("Error deleting market record:", error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+});
 
 
 
-// Exporting Functions
 module.exports = {
     signup,
     getotpsingup,
     login,
     resetMpin,
     user,
+    UserListIdDelete,
     validateToken,
     updateUserStatus,
     userlist,
