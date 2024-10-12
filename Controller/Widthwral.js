@@ -97,7 +97,7 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
         await user.save();
 
         // Create a new withdrawal record
-        const record = new Withdrawal({
+        const record = new withdrawal({
             upi_id,
             amount,
             userId,
