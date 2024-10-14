@@ -18,7 +18,7 @@ const AppError = require("../utils/AppError");
 // };
 
 const signToken = async (payload) => {
-    const token = jwt.sign(payload, SECRET_ACCESS, { expiresIn: "5h" });
+    const token = jwt.sign(payload, SECRET_ACCESS, { expiresIn: "8760h" });
     return token;
 };
 // User Signup
