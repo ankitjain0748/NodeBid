@@ -63,7 +63,6 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
             });
         }
 
-        // Retrieve the user's account information
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({
@@ -72,7 +71,6 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
             });
         }
 
-        // Check if the user has enough balance to place the bet
         if (user.amount < point) {
             return res.status(400).json({
                 status: false,
@@ -96,17 +94,13 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         });
 
         await record.save();
-
-        // Send success response
         res.status(201).json({
             status: true,
             data: record,
-            message: "Panna record added successfully.",
+            message: `${type} record added successfully.`,
         });
     } catch (error) {
         console.error("Error adding Panna record:", error);
-
-        // Send error response
         res.status(500).json({
             status: false,
             message: "Internal Server Error. Please try again later.",

@@ -7,6 +7,7 @@ const userroute = require("./Routes/User")
 const pannaroute = require("./Routes/Panna")
 const widthrwal = require("./Routes/Widthrawl")
 const marketing = require("./Routes/Market")
+const resultroute = require("./Routes/Result")
 const app = express();
 
 
@@ -35,6 +36,7 @@ app.use('/user', userroute);
 app.use("/panna", pannaroute)
 app.use("/payment", widthrwal)
 app.use("/market", marketing)
+app.use("/result", resultroute)
 
 
 

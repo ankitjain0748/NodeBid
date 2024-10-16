@@ -4,23 +4,19 @@ const catchAsync = require("../utils/catchAsync");
 exports.MarketingAdd = catchAsync(async (req, res, next) => {
     try {
         const { market_status, open_time, close_time, name, market_type, result } = req.body;
-
-        // Required fields validation
         if (!open_time || !close_time || !name) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 status: false,
-                message: "Open time, close time, and name are required!" 
+                message: "Open time, close time, and name are required!"
             });
         }
 
-        // Create and save new marketing record
         const record = new marketing({
             market_status, open_time, close_time, name, market_type, result
         });
 
         await record.save();
 
-        // Send success response
         res.status(201).json({
             status: true,
             data: record,
@@ -146,7 +142,7 @@ exports.MarketUpdate = catchAsync(async (req, res, next) => {
             });
         }
 
-        
+
 
         // Find the market by ID and update its fields
         const updatedRecord = await marketing.findByIdAndUpdate(
