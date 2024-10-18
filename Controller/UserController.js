@@ -10,6 +10,7 @@ const SECRET_ACCESS = process.env.SECRET_ACCESS;
 const { successResponse, errorResponse, validationErrorResponse } = require('../Helper/Message');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require("../utils/AppError");
+const Profile = require("../Models/Profile");
 
 // Sign Token
 // const signToken = async (payload) => {
@@ -417,6 +418,28 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
 });
 
 
+
+const Setting = catchAsync(async (req, res) => {
+    try {
+        const profile = await Profile.find({  });
+
+      
+
+        res.status(200).json({
+            status: true,
+            data: profile,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+        });
+    }
+});
+ 
+
+
 module.exports = {
     signup,
     getotpsingup,
@@ -428,6 +451,7 @@ module.exports = {
     validateToken,
     updateUserStatus,
     userlist,
+    Setting,
     UserListId,
     userlistStatus
 };

@@ -6,7 +6,8 @@ const panna = mongoose.Schema({
         required: true,
     },
     marketId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'marketing'  // Reference to the User model
     },
     status: {
         type: Boolean,
@@ -16,11 +17,15 @@ const panna = mongoose.Schema({
         type: Number,
         required: true,
     },
-    userId: String,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Signup'  // Reference to the User model
+    },
     point: {
         type: Number,
         required: true,
     },
+    name:{String},
     date: {
         type: Date,
         default: Date.now,

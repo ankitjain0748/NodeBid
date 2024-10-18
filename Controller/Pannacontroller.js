@@ -1,7 +1,9 @@
 const Panna = require("../Models/Panna");
+const Sangam = require("../Models/Sangam");
+
 const moment = require('moment');
 const catchAsync = require("../utils/catchAsync");
-const  User = require("../Models/SignUp");
+const User = require("../Models/SignUp");
 
 // Function to add a new Panna record
 exports.pannaAdd = catchAsync(async (req, res, next) => {
@@ -97,7 +99,7 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         res.status(201).json({
             status: true,
             data: record,
-            message: `${type} record added successfully.`,
+            message: `${type?.replace("_" , " ")} record added successfully.`,
         });
     } catch (error) {
         console.error("Error adding Panna record:", error);
@@ -114,6 +116,8 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
 exports.pannalist = catchAsync(async (req, res) => {
     try {
         const records = await Panna.find({}).sort({ date: -1 });
+        const sangam = await Sangam.find({}).sort({ date: -1 });
+
 
         if (!records || records.length === 0) {
             return res.status(404).json({
@@ -125,6 +129,7 @@ exports.pannalist = catchAsync(async (req, res) => {
         res.status(200).json({
             status: true,
             data: records,
+            sangam: sangam,
             message: "Records fetched successfully.",
         });
     } catch (error) {
@@ -137,3 +142,38 @@ exports.pannalist = catchAsync(async (req, res) => {
         });
     }
 });
+
+
+exports.bidhistory = catchAsync(async (req, res) => {
+    try {
+        const records = await Panna.find({})
+            .populate('userId').populate("marketId")  
+            .sort({ date: -1 });
+
+        const sangam = await Sangam.find({}).populate('userId').populate("marketId")   
+            .sort({ date: -1 });;
+
+        if (!records || records.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "No records found.",
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            data: records,  // Populated user data will be included here
+            sangam: sangam,
+            message: "Records fetched successfully.",
+        });
+    } catch (error) {
+        console.error("Error fetching Panna records:", error);
+
+        // Send error response
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+});
+

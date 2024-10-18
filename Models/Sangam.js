@@ -10,7 +10,8 @@ const sangamschema = mongoose.Schema({
         required: true,
     },
     marketId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'marketing'  // Reference to the User model
     },
     open_panna: {
         type: Number,
@@ -19,7 +20,10 @@ const sangamschema = mongoose.Schema({
     open_panna_sum: {
         type: Number,
     },
-    userId: String,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Signup'  // Reference to the User model
+    },
     close_panna: {
         type: Number,
         required: true,

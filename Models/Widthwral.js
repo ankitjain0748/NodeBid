@@ -5,9 +5,10 @@ const paymentschema = mongoose.Schema({
   upi_id: {
     type: String,
   },
-  user_id: {
-    type: String,
-  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Signup'  
+},
   amount: {
     type: Number,
     required: true,

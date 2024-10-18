@@ -17,7 +17,10 @@ const profileschema = mongoose.Schema({
     App_link: String,
     message: String,
     Video_link: String,
-    userId:String,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Signup'  // Reference to the User model
+    },
     create_date: {
         type: Date,
         default: Date.now,
