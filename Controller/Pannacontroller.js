@@ -117,12 +117,12 @@ exports.pannalist = catchAsync(async (req, res) => {
     try {
         const records = await Panna.find({}).sort({ date: -1 });
         const sangam = await Sangam.find({}).sort({ date: -1 });
-        if (!records || records.length === 0) {
-            return res.status(404).json({
-                status: false,
-                message: "No records found.",
-            });
-        }
+        // if (!records || records.length === 0) {
+        //     return res.status(404).json({
+        //         status: false,
+        //         message: "No records found.",
+        //     });
+        // }
 
         res.status(200).json({
             status: true,
