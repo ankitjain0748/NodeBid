@@ -72,9 +72,38 @@ exports.MarketList = catchAsync(async (req, res) => {
                 message: "No markets found.",
             });
         }
+
+        const currentDateTime = new Date(); // Get the current date and time
+
+        // Update the market status based on open_time and close_time
+        const updatedRecords = records.map(record => {
+            const openTimeToday = new Date();
+            const closeTimeToday = new Date();
+            const [openHours, openMinutes] = record.open_time.split(':');
+            const [closeHours, closeMinutes] = record.close_time.split(':');
+
+            openTimeToday.setHours(openHours, openMinutes, 0); // Set hours and minutes for open_time
+            closeTimeToday.setHours(closeHours, closeMinutes, 0); // Set hours and minutes for close_time
+
+            // Determine the market status based on the current time
+            let status = record.market_status; // Retain existing status initially
+            if (currentDateTime < openTimeToday) {
+                status = "inactive"; // Market is inactive before open_time
+            } else if (currentDateTime >= openTimeToday && currentDateTime <= closeTimeToday) {
+                status = "active"; // Market is active during open and close time
+            } else {
+                status = "inactive"; // Market is inactive after close_time
+            }
+
+            return {
+                ...record._doc, // Spread existing record properties
+                market_status: status // Update the market status
+            };
+        });
+
         res.status(200).json({
             status: true,
-            data: records,
+            data: updatedRecords,
             message: "Markets fetched successfully.",
         });
     } catch (error) {
@@ -85,6 +114,7 @@ exports.MarketList = catchAsync(async (req, res) => {
         });
     }
 });
+
 
 
 
@@ -164,7 +194,6 @@ exports.MarketUpdate = catchAsync(async (req, res, next) => {
     try {
         const { Id, market_status, open_time, close_time, name, market_type, result, game_rate } = req.body;
 
-        // Check if Id exists in the request
         if (!Id) {
             return res.status(400).json({
                 status: false,
@@ -172,12 +201,42 @@ exports.MarketUpdate = catchAsync(async (req, res, next) => {
             });
         }
 
+        // Current date and time
+        const currentDateTime = new Date();
 
+        // Create Date objects for open_time and close_time based on the current date
+        const openTimeToday = new Date();
+        const closeTimeToday = new Date();
 
-        // Find the market by ID and update its fields
+        // Set the open and close times by updating the hours and minutes
+        const [openHours, openMinutes] = open_time.split(':');
+        const [closeHours, closeMinutes] = close_time.split(':');
+
+        openTimeToday.setHours(openHours, openMinutes, 0); // Set hours and minutes for open_time
+        closeTimeToday.setHours(closeHours, closeMinutes, 0); // Set hours and minutes for close_time
+
+        // Determine the market status based on the current time
+        let status = market_status;
+        if (currentDateTime < openTimeToday) {
+            status = "inactive"; // Market is inactive before open_time
+        } else if (currentDateTime >= openTimeToday && currentDateTime <= closeTimeToday) {
+            status = "active"; // Market is active during open and close time
+        } else {
+            status = "inactive"; // Market is inactive after close_time
+        }
+
+        // Find the market by ID and update its fields including the dynamic market_status
         const updatedRecord = await marketing.findByIdAndUpdate(
             Id,
-            { market_status, open_time, close_time, name, market_type, result },
+            { 
+                market_status: status,  // Update status dynamically
+                open_time, 
+                close_time, 
+                name, 
+                market_type, 
+                result,
+                game_rate  // Assuming game_rate should be updated as well if passed in the request
+            },
             { new: true, runValidators: true }
         );
 
@@ -203,3 +262,4 @@ exports.MarketUpdate = catchAsync(async (req, res, next) => {
         });
     }
 });
+
