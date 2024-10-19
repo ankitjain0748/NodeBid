@@ -99,7 +99,7 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         res.status(201).json({
             status: true,
             data: record,
-            message: `${type?.replace("_" , " ")} record added successfully.`,
+            message: `${type?.replace("_" , " ")}  Bid successfully.`,
         });
     } catch (error) {
         console.error("Error adding Panna record:", error);

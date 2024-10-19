@@ -61,11 +61,6 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
     }
 });
 
-
-
-
-
-
 exports.MarketList = catchAsync(async (req, res) => {
     try {
         const records = await marketing.find({});

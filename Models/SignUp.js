@@ -28,6 +28,7 @@ const signupSchema = mongoose.Schema({
   },
   amount: {
     type: Number,
+    default: 0
   },
   user_status: {
     type: String,
