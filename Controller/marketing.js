@@ -11,29 +11,30 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
             });
         }
 
-        const currentDateTime = new Date(); // Current date and time
+        const currentTime = new Date();
+        const openTime = new Date();
+        const closeTime = new Date();
 
-        // Create Date objects for open_time and close_time based on the current date
-        const openTimeToday = new Date();
-        const closeTimeToday = new Date();
-        
-        // Set the open and close times by updating the hours and minutes
-        const [openHours, openMinutes] = open_time.split(':');
-        const [closeHours, closeMinutes] = close_time.split(':');
+        // Set open_time and close_time to today's date for accurate comparison
+        const [openHour, openMinute] = open_time.split(':');
+        const [closeHour, closeMinute] = close_time.split(':');
+        openTime.setHours(openHour, openMinute, 0, 0);
+        closeTime.setHours(closeHour, closeMinute, 0, 0);
 
-        openTimeToday.setHours(openHours, openMinutes, 0); // Set hours and minutes for open_time
-        closeTimeToday.setHours(closeHours, closeMinutes, 0); // Set hours and minutes for close_time
-        let status = market_status;
-        if (currentDateTime < openTimeToday) {
-            status = "inactive"; // Market is inactive before open_time
-        } else if (currentDateTime >= openTimeToday && currentDateTime <= closeTimeToday) {
-            status = "active"; // Market is active during open and close time
+        let status;
+        if (currentTime < openTime) {
+            // Current time is before open time
+            status = "inactive";
+        } else if (currentTime >= openTime && currentTime <= closeTime) {
+            // Current time is between open and close time
+            status = "active";
         } else {
-            status = "inactive"; // Market is inactive after close_time
+            // Current time is after close time
+            status = "inactive";
         }
 
         const record = new marketing({
-            market_status: status,  // Dynamically set the status
+            market_status: status,  // Update the status based on open and close time
             open_time,
             close_time,
             name,
@@ -58,6 +59,7 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
         });
     }
 });
+
 
 exports.MarketList = catchAsync(async (req, res) => {
     try {
