@@ -41,15 +41,18 @@ const signup = async (req, res) => {
 
         const existingPhone = await User.findOne({ phone });
         if (existingPhone) {
-            return validationErrorResponse(res, { phone: 'phone already exists' });
+            return validationErrorResponse(res, { phone: 'Phone already exists' });
         }
 
-        const phoneStr = String(phone);
+
+        // Generate a random 4-digit number for phone_digit
+        const randomPhoneDigit = Math.floor(1000 + Math.random() * 9000); // Generates a random 4-digit number
+
         const newUser = new User({
             role,
             mpin,
             phone,
-            phone_digit: phoneStr.slice(0, 4),
+            phone_digit: randomPhoneDigit,  // Assign random 4-digit number
             username,
         });
 
@@ -65,6 +68,7 @@ const signup = async (req, res) => {
         return errorResponse(res, "Error creating user");
     }
 };
+
 
 // OTP Verification
 const getotpsingup = async (req, res) => {
