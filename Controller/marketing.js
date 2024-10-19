@@ -11,9 +11,39 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
             });
         }
 
+        const currentDateTime = new Date(); // Current date and time
+
+        // Create Date objects for open_time and close_time based on the current date
+        const openTimeToday = new Date();
+        const closeTimeToday = new Date();
+        
+        // Set the open and close times by updating the hours and minutes
+        const [openHours, openMinutes] = open_time.split(':');
+        const [closeHours, closeMinutes] = close_time.split(':');
+
+        openTimeToday.setHours(openHours, openMinutes, 0); // Set hours and minutes for open_time
+        closeTimeToday.setHours(closeHours, closeMinutes, 0); // Set hours and minutes for close_time
+
+        // Determine the market status based on the current time
+        let status = market_status;
+        if (currentDateTime < openTimeToday) {
+            status = "inactive"; // Market is inactive before open_time
+        } else if (currentDateTime >= openTimeToday && currentDateTime <= closeTimeToday) {
+            status = "active"; // Market is active during open and close time
+        } else {
+            status = "inactive"; // Market is inactive after close_time
+        }
+
         const record = new marketing({
-            market_status, open_time, close_time, name, market_type, result
+            market_status: status,  // Dynamically set the status
+            open_time,
+            close_time,
+            name,
+            market_type,
+            result
         });
+
+        console.log("record", record);
 
         await record.save();
 
@@ -32,18 +62,21 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
 });
 
 
+
+
+
+
 exports.MarketList = catchAsync(async (req, res) => {
     try {
         const records = await marketing.find({});
+        console.log("records", records);
 
-        // Check if records exist
         if (!records || records.length === 0) {
             return res.status(404).json({
                 status: false,
                 message: "No markets found.",
             });
         }
-
         res.status(200).json({
             status: true,
             data: records,
@@ -57,6 +90,8 @@ exports.MarketList = catchAsync(async (req, res) => {
         });
     }
 });
+
+
 
 exports.MarketListId = catchAsync(async (req, res) => {
     try {
