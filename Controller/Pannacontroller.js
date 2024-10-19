@@ -88,7 +88,7 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         const record = new Panna({
             type,
             status,
-            date: parsedDate.add(1, 'day').utc().toDate(), // Adjust date if needed
+            date: parsedDate, // Adjust date if needed
             digit,
             point,
             userId,

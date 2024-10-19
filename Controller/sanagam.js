@@ -75,7 +75,7 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         const record = new sanagam({
             type,
             status,
-            date: parsedDate.add(1, 'day').utc().toDate(), // Adjust date as per requirement
+            date: parsedDate, // Adjust date as per requirement
             open_panna,
             close_panna,
             bid_point,
