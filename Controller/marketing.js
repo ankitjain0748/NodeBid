@@ -23,8 +23,6 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
 
         openTimeToday.setHours(openHours, openMinutes, 0); // Set hours and minutes for open_time
         closeTimeToday.setHours(closeHours, closeMinutes, 0); // Set hours and minutes for close_time
-
-        // Determine the market status based on the current time
         let status = market_status;
         if (currentDateTime < openTimeToday) {
             status = "inactive"; // Market is inactive before open_time
@@ -63,7 +61,7 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
 
 exports.MarketList = catchAsync(async (req, res) => {
     try {
-        const records = await marketing.find({});
+        const records = await marketing.find({date:-1});
         console.log("records", records);
 
         if (!records || records.length === 0) {
