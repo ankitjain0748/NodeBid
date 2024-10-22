@@ -1,10 +1,10 @@
-const { ReusltAdd, ResultList } = require("../Controller/ResultController");
+const { ResultAdd, ResultList } = require("../Controller/ResultController");
 
 const resultroute = require("express").Router();
 
 
 
-resultroute.post("/resultadd" , ReusltAdd);
+resultroute.post("/resultadd" , ResultAdd);
 
 resultroute.get("/resultget" , ResultList)
 
