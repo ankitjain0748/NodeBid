@@ -35,6 +35,7 @@ const signupSchema = mongoose.Schema({
     enum: ["active", "inactive"],
     default: "active",
   },
+  
 });
 
 module.exports = mongoose.model("Signup", signupSchema);

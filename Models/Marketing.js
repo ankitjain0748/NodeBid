@@ -40,11 +40,15 @@ const marketingSchema = new mongoose.Schema({
     type: String,
   },
   result: {
-    type: Number,
+    type: String,
   },
   game_rate: {
     type: Number,
-  }
+  },
+  create_date: {
+    type: Date,
+    default: Date.now,
+}
 });
 
 const Marketing = mongoose.model('marketing', marketingSchema);
