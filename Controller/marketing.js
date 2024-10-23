@@ -59,7 +59,8 @@ exports.MarketingAdd = catchAsync(async (req, res, next) => {
 
 exports.MarketList = catchAsync(async (req, res) => {
     try {
-        const records = await marketing.find({});
+        // Fetch records and sort by creation date in descending order (latest first)
+        const records = await marketing.find({}).sort({ create_date: -1 });
         console.log("records", records);
 
         if (!records || records.length === 0) {
@@ -109,6 +110,7 @@ exports.MarketList = catchAsync(async (req, res) => {
         });
     }
 });
+
 
 
 
