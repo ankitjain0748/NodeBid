@@ -89,10 +89,11 @@ const catchAsync = require("../utils/catchAsync");
 exports.ResultAdd = async (req, res) => {
     try {
         const { session, number, betdate, marketId } = req.body;
-
+        const bit_number = 2;
+        const generatedBitNumber = bit_number || Math.floor(100000 + Math.random() * 900000); // 6-digit random number
+        console.log("Generated bit_number:", generatedBitNumber); // Log the generated bit_number
         const sumOfDigits = number.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
         console.log("sumOfDigits", sumOfDigits);
-
         const Pannamodel = await Panna.find({}).populate('userId').populate('marketId');
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found." });
@@ -105,18 +106,17 @@ exports.ResultAdd = async (req, res) => {
 
         console.log("SangamModel", SangamModel);
 
-        // Initialize object to hold the final result data
         const resultData = {
             session,
             number,
             betdate,
             marketId,
+            bit_number: generatedBitNumber, // Use the generated bit_number
             panaaModal: null,
             sangamModal: null,
             userId: null // Store userId from either model
         };
 
-        // Check Panna models
         for (const panna of Pannamodel) {
             if ((session === 'open' && panna.status === true) || (session === 'close' && panna.status === false)) {
                 if (panna.point === sumOfDigits) {
@@ -160,11 +160,12 @@ exports.ResultAdd = async (req, res) => {
 
 
 
+
 exports.ResultList = catchAsync(async (req, res) => {
     try {
         const records = await ResultModel.find({})
-            .populate('marketId') 
-            .populate('userId') 
+            .populate('marketId')
+            .populate('userId')
 
             ;
 

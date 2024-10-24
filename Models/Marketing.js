@@ -10,6 +10,9 @@ const marketingSchema = new mongoose.Schema({
     type: String,
     default: "dehli"
   },
+  bit_number: {
+    type: Number,
+  },
   open_time: {
     type: String,
     required: true,
