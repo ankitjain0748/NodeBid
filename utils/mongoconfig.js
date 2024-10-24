@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config();
-console.log("process.env.DzsB_URL", process.env.DB_URL)
 
 mongoose.connect(`${process.env.DB_URL}`, {
     useNewUrlParser: true,

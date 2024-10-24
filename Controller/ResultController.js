@@ -91,9 +91,7 @@ exports.ResultAdd = async (req, res) => {
         const { session, number, betdate, marketId } = req.body;
         const bit_number = 2;
         const generatedBitNumber = bit_number || Math.floor(100000 + Math.random() * 900000); // 6-digit random number
-        console.log("Generated bit_number:", generatedBitNumber); // Log the generated bit_number
         const sumOfDigits = number.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
-        console.log("sumOfDigits", sumOfDigits);
         const Pannamodel = await Panna.find({}).populate('userId').populate('marketId');
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found." });
@@ -104,8 +102,6 @@ exports.ResultAdd = async (req, res) => {
             return res.status(404).json({ message: "No Sangam models found." });
         }
 
-        console.log("SangamModel", SangamModel);
-        console.log("Pannamodel",Pannamodel)
 
         const resultData = {
             session,
@@ -117,7 +113,6 @@ exports.ResultAdd = async (req, res) => {
             sangamModal: null,
             userId: null 
         };
-console.log("resultData",resultData)
 
         for (const panna of Pannamodel) {
             if ((session === 'open' && panna.status === true) || (session === 'close' && panna.status === false)) {
@@ -131,7 +126,6 @@ console.log("resultData",resultData)
                         closePanna = panna.point
                         openPanna = panna.point; // Store the close panna result
                     }
-                    console.log("Result data to be saved for Panna:", resultData);
                 }
             }
         }
@@ -140,8 +134,6 @@ console.log("resultData",resultData)
         // Check Sangam models for open or close session
         for (const sangam of SangamModel) {
             if ((session === 'open' && sangam.status === true) || (session === 'close' && sangam.status === false)) {
-                console.log("sangam.bid_point",sangam.bid_point)
-                console.log("number",number)
                 if (parseInt(sangam.bid_point) === parseInt(number)) {
                     resultData.sangamModal = sangam;
                     resultData.userId = sangam.userId;
@@ -152,17 +144,12 @@ console.log("resultData",resultData)
                         closePanna = sangam.close_panna;
                         openPanna = sangam.open_panna; // Store the close panna result
                     }
-                    console.log("Result data to be saved for Sangam:", resultData);
-                } else {
-                    console.log(`No matching bid point found. Sangam bid_point: ${sangam.bid_point}, Provided number: ${number}`);
-                }
+                } 
                 
             }
         }
         if (openPanna || closePanna) {
             const formattedResult = `${openPanna || ''}-${number}-${closePanna || ''}`;
-            console.log("Formatted result:", formattedResult);
-
             const data = new ResultModel(resultData);
             const result = await data.save();
 
