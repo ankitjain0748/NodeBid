@@ -13,6 +13,9 @@ const sangamschema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'marketing'  // Reference to the User model
     },
+    win_manage:{
+        type:String
+      },
     open_panna: {
         type: Number,
         required: true,

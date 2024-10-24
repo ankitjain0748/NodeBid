@@ -25,6 +25,9 @@ const panna = mongoose.Schema({
         type: Number,
         required: true,
     },
+    win_manage:{
+        type:String
+      },
     name:{String},
     date: {
         type: Date,

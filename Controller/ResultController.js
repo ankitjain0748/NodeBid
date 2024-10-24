@@ -88,74 +88,78 @@ const catchAsync = require("../utils/catchAsync");
 
 exports.ResultAdd = async (req, res) => {
     try {
-        const { session, number, betdate, marketId } = req.body;
-        const bit_number = 2;
+        const { session, number, betdate, marketId, bit_number } = req.body;
+
+        // If bit_number is not provided, generate a default one
         const generatedBitNumber = bit_number || Math.floor(100000 + Math.random() * 900000); // 6-digit random number
+        console.log("Generated bit_number:", generatedBitNumber);
+
+        // Sum of digits logic
         const sumOfDigits = number.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+        console.log("sumOfDigits", sumOfDigits);
+
+        // Fetching Panna and Sangam models
         const Pannamodel = await Panna.find({}).populate('userId').populate('marketId');
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found." });
         }
 
-        const SangamModel = await Sangam.find({ marketId }).populate('userId').populate('marketId');
+        const SangamModel = await Sangam.find({}).populate('userId').populate('marketId');
         if (!SangamModel || SangamModel.length === 0) {
             return res.status(404).json({ message: "No Sangam models found." });
         }
 
+        console.log("SangamModel", SangamModel);
 
+        // Initialize object to hold the final result data
         const resultData = {
             session,
             number,
             betdate,
             marketId,
-            bit_number: generatedBitNumber, // Use the generated bit_number
+            bit_number: generatedBitNumber,
             panaaModal: null,
             sangamModal: null,
-            userId: null 
+            userId: null,
+            win_manage: "loser" // Default value is loser
         };
 
+        let pannaWin = false;
+        let sangamWin = false;
+
+        // Check Panna models
         for (const panna of Pannamodel) {
             if ((session === 'open' && panna.status === true) || (session === 'close' && panna.status === false)) {
                 if (panna.point === sumOfDigits) {
                     resultData.panaaModal = panna;
                     resultData.userId = panna.userId;
-                    if (session === 'open') {
-                        closePanna = panna.point
-                        openPanna = panna.point; // Store the open panna result
-                    } else {
-                        closePanna = panna.point
-                        openPanna = panna.point; // Store the close panna result
-                    }
+                    pannaWin = true; // User wins in Panna
+                    console.log("Result data to be saved for Panna:", resultData);
                 }
             }
         }
 
-
-        // Check Sangam models for open or close session
+        // Check Sangam models
         for (const sangam of SangamModel) {
             if ((session === 'open' && sangam.status === true) || (session === 'close' && sangam.status === false)) {
-                if (parseInt(sangam.bid_point) === parseInt(number)) {
+                if (sangam.bid_point === number) {
                     resultData.sangamModal = sangam;
                     resultData.userId = sangam.userId;
-                    if (session === 'open') {
-                        closePanna = sangam.close_panna;
-                        openPanna = sangam.open_panna; // Store the open panna result
-                    } else {
-                        closePanna = sangam.close_panna;
-                        openPanna = sangam.open_panna; // Store the close panna result
-                    }
-                } 
-                
+                    sangamWin = true; // User wins in Sangam
+                    console.log("Result data to be saved for Sangam:", resultData);
+                }
             }
         }
-        if (openPanna || closePanna) {
-            const formattedResult = `${openPanna || ''}-${number}-${closePanna || ''}`;
+
+        // Determine win_manage based on Panna and Sangam win conditions
+        if (pannaWin || sangamWin) {
+            resultData.win_manage = "winner"; // If the user wins in Panna or Sangam
+        }
+
+        // If any data was found, save the result
+        if (resultData.panaaModal || resultData.sangamModal) {
             const data = new ResultModel(resultData);
             const result = await data.save();
-
-            await Market.findByIdAndUpdate(marketId, {
-                result: formattedResult // Save the formatted result (222-555-589 format)
-            });
             return res.status(200).json({
                 status: 200,
                 message: "Result saved successfully.",
@@ -170,6 +174,7 @@ exports.ResultAdd = async (req, res) => {
         res.status(500).json({ message: "An error occurred while saving the result." });
     }
 };
+
 
 
 

@@ -3,16 +3,16 @@ const mongoose = require("mongoose")
 
 const resultmongoose = mongoose.Schema({
 
-    betdate:{
+    betdate: {
         type: Date,
     },
 
-    session :{
-        type :String
+    session: {
+        type: String
     },
 
-    number :{
-        type :Number
+    number: {
+        type: Number
     },
 
     marketId: {
@@ -24,18 +24,24 @@ const resultmongoose = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Signup'  // Reference to the User model
     },
-    panaaModal : {
+    panaaModal: {
         type: Array,
     },
 
-    sangamModal : {
+    sangamModal: {
         type: Array,
-    }
+    },
+    bit_number: {
+        type: Number,
+    },
+    win_manage: {
+        type: String
+    },
 
 })
 
 
-const resultmodel = mongoose.model("result" , resultmongoose);
+const resultmodel = mongoose.model("result", resultmongoose);
 
 
-module.exports= resultmodel;
+module.exports = resultmodel;

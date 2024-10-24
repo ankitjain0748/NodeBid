@@ -8,11 +8,4 @@ router.get(`/marketlist/:id`, Marketing.MarketListId);
 router.post("/marketdelete", Marketing.MarketDelete)
 router.post("/marketupdate", Marketing.MarketUpdate)
 
-
-
-
-
-
-
-
 module.exports = router

@@ -13,6 +13,9 @@ const marketingSchema = new mongoose.Schema({
   bit_number: {
     type: Number,
   },
+  win_manage:{
+    type:String
+  },
   open_time: {
     type: String,
     required: true,
