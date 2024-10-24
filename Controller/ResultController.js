@@ -99,12 +99,13 @@ exports.ResultAdd = async (req, res) => {
             return res.status(404).json({ message: "No Panna models found." });
         }
 
-        const SangamModel = await Sangam.find({}).populate('userId').populate('marketId');
+        const SangamModel = await Sangam.find({ marketId }).populate('userId').populate('marketId');
         if (!SangamModel || SangamModel.length === 0) {
             return res.status(404).json({ message: "No Sangam models found." });
         }
 
         console.log("SangamModel", SangamModel);
+        console.log("Pannamodel",Pannamodel)
 
         const resultData = {
             session,
@@ -114,34 +115,60 @@ exports.ResultAdd = async (req, res) => {
             bit_number: generatedBitNumber, // Use the generated bit_number
             panaaModal: null,
             sangamModal: null,
-            userId: null // Store userId from either model
+            userId: null 
         };
+console.log("resultData",resultData)
 
         for (const panna of Pannamodel) {
             if ((session === 'open' && panna.status === true) || (session === 'close' && panna.status === false)) {
                 if (panna.point === sumOfDigits) {
-                    resultData.panaaModal = panna; // Save Panna data
-                    resultData.userId = panna.userId; // Save userId from Panna
+                    resultData.panaaModal = panna;
+                    resultData.userId = panna.userId;
+                    if (session === 'open') {
+                        closePanna = panna.point
+                        openPanna = panna.point; // Store the open panna result
+                    } else {
+                        closePanna = panna.point
+                        openPanna = panna.point; // Store the close panna result
+                    }
                     console.log("Result data to be saved for Panna:", resultData);
                 }
             }
         }
 
-        // Check Sangam models
+
+        // Check Sangam models for open or close session
         for (const sangam of SangamModel) {
             if ((session === 'open' && sangam.status === true) || (session === 'close' && sangam.status === false)) {
-                if (sangam.bid_point === number) {
-                    resultData.sangamModal = sangam; // Save Sangam data
-                    resultData.userId = sangam.userId; // Save userId from Sangam
+                console.log("sangam.bid_point",sangam.bid_point)
+                console.log("number",number)
+                if (parseInt(sangam.bid_point) === parseInt(number)) {
+                    resultData.sangamModal = sangam;
+                    resultData.userId = sangam.userId;
+                    if (session === 'open') {
+                        closePanna = sangam.close_panna;
+                        openPanna = sangam.open_panna; // Store the open panna result
+                    } else {
+                        closePanna = sangam.close_panna;
+                        openPanna = sangam.open_panna; // Store the close panna result
+                    }
                     console.log("Result data to be saved for Sangam:", resultData);
+                } else {
+                    console.log(`No matching bid point found. Sangam bid_point: ${sangam.bid_point}, Provided number: ${number}`);
                 }
+                
             }
         }
+        if (openPanna || closePanna) {
+            const formattedResult = `${openPanna || ''}-${number}-${closePanna || ''}`;
+            console.log("Formatted result:", formattedResult);
 
-        // If any data was found, save the result
-        if (resultData.panaaModal || resultData.sangamModal) {
             const data = new ResultModel(resultData);
             const result = await data.save();
+
+            await Market.findByIdAndUpdate(marketId, {
+                result: formattedResult // Save the formatted result (222-555-589 format)
+            });
             return res.status(200).json({
                 status: 200,
                 message: "Result saved successfully.",
