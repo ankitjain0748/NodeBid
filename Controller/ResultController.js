@@ -212,6 +212,7 @@ exports.ResultList = catchAsync(async (req, res) => {
 
 exports.ResultAddMarket = async (req, res) => {
     try {
+        console.log(req.body)
         const { marketId } = req.body;
 
         if (!marketId) {
