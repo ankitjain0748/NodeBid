@@ -15,7 +15,7 @@ const resultmongoose = mongoose.Schema({
         type: Number
     },
 
-    marketId: {
+    market_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'marketing'  // Reference to the User model
     },

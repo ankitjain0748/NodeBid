@@ -110,7 +110,58 @@ exports.MarketList = catchAsync(async (req, res) => {
 });
 
 
+exports.MarketListStatus = catchAsync(async (req, res) => {
+    try {
+        // Fetch records and sort by creation date in descending order (latest first)
+        const records = await marketing.find({market_status:active}).sort({ create_date: -1 });
 
+        if (!records || records.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "No markets found.",
+            });
+        }
+
+        const currentDateTime = new Date(); // Get the current date and time
+
+        // Update the market status based on open_time and close_time
+        const updatedRecords = records.map(record => {
+            const openTimeToday = new Date();
+            const closeTimeToday = new Date();
+            const [openHours, openMinutes] = record.open_time.split(':');
+            const [closeHours, closeMinutes] = record.close_time.split(':');
+
+            openTimeToday.setHours(openHours, openMinutes, 0); // Set hours and minutes for open_time
+            closeTimeToday.setHours(closeHours, closeMinutes, 0); // Set hours and minutes for close_time
+
+            // Determine the market status based on the current time
+            let status = record.market_status; // Retain existing status initially
+
+            if (currentDateTime > closeTimeToday) {
+                status = "inactive"; // Market is inactive after close_time
+            } else if (currentDateTime <= closeTimeToday) {
+                status = "active"; // Market is active before or equal to close_time
+            }
+
+            return {
+                ...record._doc, // Spread existing record properties
+                market_status: status // Update the market status
+            };
+        });
+
+        res.status(200).json({
+            status: true,
+            data: updatedRecords,
+            message: "Markets fetched successfully.",
+        });
+    } catch (error) {
+        console.error("Error fetching markets:", error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+});
 
 
 

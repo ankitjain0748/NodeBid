@@ -88,35 +88,33 @@ const catchAsync = require("../utils/catchAsync");
 
 exports.ResultAdd = async (req, res) => {
     try {
-        const { session, number, betdate, marketId, bit_number } = req.body;
+        const { session, number, betdate, market_id, bit_number } = req.body;
 
+        console.log("req.body", req.body)
         // If bit_number is not provided, generate a default one
         const generatedBitNumber = bit_number || Math.floor(100000 + Math.random() * 900000); // 6-digit random number
-        console.log("Generated bit_number:", generatedBitNumber);
 
         // Sum of digits logic
         const sumOfDigits = number.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
-        console.log("sumOfDigits", sumOfDigits);
 
         // Fetching Panna and Sangam models
-        const Pannamodel = await Panna.find({}).populate('userId').populate('marketId');
+        const Pannamodel = await Panna.find({}).populate('userId').populate('market_id');
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found." });
         }
 
-        const SangamModel = await Sangam.find({}).populate('userId').populate('marketId');
+        const SangamModel = await Sangam.find({}).populate('userId').populate('market_id');
         if (!SangamModel || SangamModel.length === 0) {
             return res.status(404).json({ message: "No Sangam models found." });
         }
 
-        console.log("SangamModel", SangamModel);
 
         // Initialize object to hold the final result data
         const resultData = {
             session,
             number,
             betdate,
-            marketId,
+            market_id,
             bit_number: generatedBitNumber,
             panaaModal: null,
             sangamModal: null,
@@ -155,18 +153,17 @@ exports.ResultAdd = async (req, res) => {
         if (pannaWin || sangamWin) {
             resultData.win_manage = "winner"; // If the user wins in Panna or Sangam
         }
-
         // If any data was found, save the result
         if (resultData.panaaModal || resultData.sangamModal) {
             const data = new ResultModel(resultData);
             const result = await data.save();
+
             return res.status(200).json({
                 status: 200,
                 message: "Result saved successfully.",
                 data: result
             });
         }
-
         return res.status(400).json({ message: "No matching point found in Panna or Sangam models." });
 
     } catch (error) {
