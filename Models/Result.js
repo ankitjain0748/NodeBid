@@ -34,6 +34,12 @@ const resultmongoose = mongoose.Schema({
     bit_number: {
         type: Number,
     },
+    result :{
+        type :String
+    },
+    amount :{
+        type :Number
+    },
     win_manage: {
         type: String
     },
