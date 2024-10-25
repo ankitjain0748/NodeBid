@@ -139,6 +139,58 @@ const login = catchAsync(async (req, res, next) => {
 });
 
 
+const Sublogin = catchAsync(async (req, res, next) => {
+    try {
+        const { phone, mpin, _id } = req.body;
+
+        // Check if _id is provided
+        if (!_id) {
+            return res.status(400).json({
+                status: false,
+                message: "User ID is required!",
+            });
+        }
+
+        // Construct the update object with only the provided fields
+        const updateFields = {};
+        if (phone) updateFields.phone = phone;
+        if (mpin) updateFields.mpin = mpin;
+
+        // Ensure at least one of phone or mpin is provided to update
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({
+                status: false,
+                message: "At least one of Phone or MPIN must be provided for update!",
+            });
+        }
+
+        // Find the user by ID and update
+        const user = await User.findByIdAndUpdate(_id, updateFields, {
+            new: true, // Returns the updated document
+            runValidators: true, // Ensures validation rules are applied
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found",
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            message: "User information updated successfully!",
+            user,
+        });
+    } catch (error) {
+        console.error("Error during user update:", error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+        });
+    }
+});
+
 const validateToken = catchAsync(async (req, res, next) => {
     let authHeader = req.headers.Authorization || req.headers.authorization;
 
@@ -456,6 +508,7 @@ module.exports = {
     updateUserStatus,
     userlist,
     Setting,
+    Sublogin,
     UserListId,
     userlistStatus
 };
