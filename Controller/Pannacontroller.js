@@ -1,15 +1,13 @@
 const Panna = require("../Models/Panna");
 const Sangam = require("../Models/Sangam");
-
 const moment = require('moment');
 const catchAsync = require("../utils/catchAsync");
 const User = require("../Models/SignUp");
 
-// Function to add a new Panna record
 exports.pannaAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
-        const { type, status, date, digit, point, marketId } = req.body;
+        const { type, status, date, digit, point, marketId, sangam_type } = req.body;
 
         // User ID validation
         if (!userId) {
@@ -18,14 +16,6 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
                 message: "User information not found in the request or userId is undefined.",
             });
         }
-
-        // Required fields validation
-        // if (!type || !status || !date || !digit || !point) {
-        //     return res.status(400).json({
-        //         status: false,
-        //         message: "All fields are required!",
-        //     });
-        // }
 
         // Validate digit based on type
         if (type === "single_digit") {
@@ -83,7 +73,6 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         // Deduct the points from the user's amount
         user.amount -= point;
         await user.save();
-
         // Create a new record
         const record = new Panna({
             type,
@@ -92,6 +81,7 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
             digit,
             point,
             userId,
+            sangam_type,
             marketId,
         });
 
@@ -99,7 +89,7 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
         res.status(201).json({
             status: true,
             data: record,
-            message: `${type?.replace("_" , " ")}  Bid successfully.`,
+            message: `${type?.replace("_", " ")}  Bid successfully.`,
         });
     } catch (error) {
         console.error("Error adding Panna record:", error);
@@ -145,10 +135,10 @@ exports.pannalist = catchAsync(async (req, res) => {
 exports.bidhistory = catchAsync(async (req, res) => {
     try {
         const records = await Panna.find({})
-            .populate('userId').populate("marketId")  
+            .populate('userId').populate("marketId")
             .sort({ date: -1 });
 
-        const sangam = await Sangam.find({}).populate('userId').populate("marketId")   
+        const sangam = await Sangam.find({}).populate('userId').populate("marketId")
             .sort({ date: -1 });;
 
         if (!records || records.length === 0) {

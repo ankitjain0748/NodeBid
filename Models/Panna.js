@@ -25,6 +25,9 @@ const panna = mongoose.Schema({
         type: Number,
         required: true,
     },
+    sangam_type:{
+        type:String
+    },
     win_manage:{
         type:String
       },

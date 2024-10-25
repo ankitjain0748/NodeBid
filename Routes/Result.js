@@ -1,4 +1,4 @@
-const { ResultAdd, ResultList } = require("../Controller/ResultController");
+const { ResultAdd, ResultList, ResultAddMarket, ResultUser } = require("../Controller/ResultController");
 
 const resultroute = require("express").Router();
 
@@ -7,6 +7,11 @@ const resultroute = require("express").Router();
 resultroute.post("/resultadd" , ResultAdd);
 
 resultroute.get("/resultget" , ResultList)
+
+resultroute.post("/market" , ResultAddMarket)
+
+resultroute.post("/winner" , ResultUser)
+
 
 
 

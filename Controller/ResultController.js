@@ -88,7 +88,7 @@ const catchAsync = require("../utils/catchAsync");
 
 exports.ResultAdd = async (req, res) => {
     try {
-        const { session, number, betdate, market_id, bit_number } = req.body;
+        const { session, number, betdate, marketId, bit_number } = req.body;
 
         console.log("req.body", req.body)
         // If bit_number is not provided, generate a default one
@@ -98,12 +98,12 @@ exports.ResultAdd = async (req, res) => {
         const sumOfDigits = number.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
 
         // Fetching Panna and Sangam models
-        const Pannamodel = await Panna.find({}).populate('userId').populate('market_id');
+        const Pannamodel = await Panna.find({}).populate('userId').populate('marketId');
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found." });
         }
 
-        const SangamModel = await Sangam.find({}).populate('userId').populate('market_id');
+        const SangamModel = await Sangam.find({}).populate('userId').populate('marketId');
         if (!SangamModel || SangamModel.length === 0) {
             return res.status(404).json({ message: "No Sangam models found." });
         }
@@ -114,7 +114,7 @@ exports.ResultAdd = async (req, res) => {
             session,
             number,
             betdate,
-            market_id,
+            marketId,
             bit_number: generatedBitNumber,
             panaaModal: null,
             sangamModal: null,
@@ -206,3 +206,71 @@ exports.ResultList = catchAsync(async (req, res) => {
     }
 });
 
+exports.ResultAddMarket = async (req, res) => {
+    try {
+        const { marketId } = req.body;
+
+        if (!marketId) {
+            return res.status(400).json({ message: "Market ID is required." });
+        }
+
+        // Fetching Panna models based on marketId
+        const Pannamodel = await Panna.find().populate('userId').populate('marketId');
+        if (!Pannamodel || Pannamodel.length === 0) {
+            return res.status(404).json({ message: "No Panna models found for the given market ID." });
+        }
+
+        // Fetching Sangam models based on marketId
+        const SangamModel = await Sangam.find().populate('userId').populate('marketId');
+        if (!SangamModel || SangamModel.length === 0) {
+            return res.status(404).json({ message: "No Sangam models found for the given market ID." });
+        }
+
+        // Process and structure the data as needed
+        const result = {
+            pannaData: Pannamodel,
+            sangamData: SangamModel,
+        };
+
+        return res.status(200).json({
+            status: 200,
+            message: "Result fetched successfully.",
+            data: result
+        });
+
+    } catch (error) {
+        console.error("Error fetching result:", error);
+        res.status(500).json({ message: "An error occurred while fetching the result." });
+    }
+};
+
+
+
+exports.ResultUser = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ message: "Market ID is required." });
+        }
+
+        // Fetching Panna models based on marketId
+        const Pannamodel = await ResultModel.find({userId});
+        if (!Pannamodel || Pannamodel.length === 0) {
+            return res.status(404).json({ message: "No Panna models found for the given market ID." });
+        }
+
+     
+
+
+        return res.status(200).json({
+            status: 200,
+            message: "Result fetched successfully.",
+            data: Pannamodel
+        });
+
+    } catch (error) {
+        console.error("Error fetching result:", error);
+        res.status(500).json({ message: "An error occurred while fetching the result." });
+    }
+};
