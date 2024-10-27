@@ -425,25 +425,40 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
                 status: false,
             });
         }
-        profile.Profile_name = Profile_name;
-        profile.Upi_id = Upi_id;
-        profile.whatapps = whatapps;
-        profile.phone = phone;
-        profile.profile_email = profile_email;
-        profile.marchant_id = marchant_id;
-        profile.min_widthrawal_rate = min_widthrawal_rate;
-        profile.min_desposite_rate = min_desposite_rate;
-        profile.min_bid_amount = min_bid_amount;
-        profile.welcome_bouns = welcome_bouns;
-        profile.Withrawal = Withrawal;
-        profile.App_link = App_link;
-        profile.message = message;
-        profile.Video_link = Video_link;
-        await profile.save();
+
+        // Update the profile based on userId
+        const updatedProfile = await User.findOneAndUpdate(
+            { _id :userId },
+            {
+                Profile_name,
+                Upi_id,
+                whatapps,
+                phone,
+                profile_email,
+                marchant_id,
+                min_widthrawal_rate,
+                min_desposite_rate,
+                min_bid_amount,
+                welcome_bouns,
+                Withrawal,
+                App_link,
+                message,
+                Video_link
+            },
+            { new: true, upsert: true } // `new: true` returns the updated document; `upsert: true` creates it if not found
+        );
+
+        if (!updatedProfile) {
+            return res.status(404).json({
+                status: false,
+                message: "Profile not found for the given user ID",
+            });
+        }
+
         return res.status(200).json({
             status: true,
-            data: profile,
-            message: "Profile updated successfully.",
+            message: "Profile updated successfully",
+            data: updatedProfile,
         });
 
     } catch (error) {
@@ -458,9 +473,10 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
 
 
 
+
 const Setting = catchAsync(async (req, res) => {
     try {
-        const profile = await Profile.find({});
+        const profile = await User.find({role :"admin"});
         res.status(200).json({
             status: true,
             data: profile,

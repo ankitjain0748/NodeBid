@@ -5,6 +5,7 @@ const Panna = require("../Models/Panna");
 const Sangam = require("../Models/Sangam");
 
 const catchAsync = require("../utils/catchAsync");
+const Marketing = require("../Models/Marketing");
 
 // exports.ResultAdd = async (req, res) => {
 //     try {
@@ -85,20 +86,13 @@ const catchAsync = require("../utils/catchAsync");
 //     }
 // };
 
-
 exports.ResultAdd = async (req, res) => {
     try {
         const { session, number, betdate, marketId, bit_number } = req.body;
 
-        console.log("req.body", req.body);
-
-        // If bit_number is not provided, generate a default one
         const generatedBitNumber = bit_number || Math.floor(100000 + Math.random() * 900000); // 6-digit random number
-
-        // Calculate the sum of digits
         const sumOfDigits = number.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
 
-        // Fetching Panna and Sangam models
         const Pannamodel = await Panna.find({}).populate('userId').populate('marketId');
         const SangamModel = await Sangam.find({}).populate('userId').populate('marketId');
 
@@ -106,7 +100,6 @@ exports.ResultAdd = async (req, res) => {
             return res.status(404).json({ message: "No Panna or Sangam models found." });
         }
 
-        // Initialize result data
         const resultData = {
             session,
             result: null,
@@ -115,9 +108,11 @@ exports.ResultAdd = async (req, res) => {
             marketId,
             bit_number: generatedBitNumber,
             panaaModal: null,
+            win_amount :0,
             sangamModal: null,
-            userId: null,
-            win_manage: "loser" // Default value is loser
+            userId: null, // This should be set during the matching process
+            win_manage: "loser", // Default value is loser
+            win_amount: 0 // Default win_amount if no win condition is met
         };
 
         let pannaWin = false;
@@ -126,10 +121,10 @@ exports.ResultAdd = async (req, res) => {
             if ((session === 'open' && panna.status === true) || (session === 'close' && panna.status === false)) {
                 if (panna.point === sumOfDigits) {
                     resultData.panaaModal = panna;
-                    resultData.userId = panna.userId;
+                    resultData.userId = panna._id; // Set userId from matched Panna
                     resultData.result = panna.marketId.result;
                     pannaWin = true;
-                    break; // No need to keep checking if we found a match
+                    break;
                 }
             }
         }
@@ -138,19 +133,21 @@ exports.ResultAdd = async (req, res) => {
             if ((session === 'open' && sangam.status === true) || (session === 'close' && sangam.status === false)) {
                 if (sangam.bid_point === number) {
                     resultData.sangamModal = sangam;
-                    resultData.userId = sangam.userId;
-                    resultData.result = sangam.marketId.result; // Assign result key from Sangam's marketId
+                    resultData.userId = sangam._id; // Set userId from matched Sangam
+                    resultData.result = sangam.marketId.result;
                     sangamWin = true;
-                    break; // No need to keep checking if we found a match
+                    break;
                 }
             }
         }
 
-        // Determine win_manage based on Panna and Sangam win conditions
+        // Set win status
         if (pannaWin || sangamWin) {
             resultData.win_manage = "winner";
         }
-        if (resultData.panaaModal || resultData.sangamModal) {
+
+        // Check if userId is set before saving
+        if (resultData.userId && (resultData.panaaModal || resultData.sangamModal)) {
             const data = new ResultModel(resultData);
             const savedResult = await data.save();
 
@@ -205,7 +202,6 @@ exports.ResultList = catchAsync(async (req, res) => {
 
 exports.ResultAddMarket = async (req, res) => {
     try {
-        console.log(req.body);
         const { marketId } = req.body;
 
         if (!marketId) {
@@ -238,7 +234,7 @@ exports.ResultAddMarket = async (req, res) => {
 };
 
 
-
+// marketname, close panna, close digit, open pana , open ditig
 
 exports.ResultUser = async (req, res) => {
     try {
@@ -247,14 +243,39 @@ exports.ResultUser = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ message: "User ID is required." });
         }
-        const Pannamodel = await ResultModel.find({ userId });
+
+        const Pannamodel = await ResultModel.find({ userId }).select('win_manage betdate session type bit_number marketId win_amount');
+
         if (!Pannamodel || Pannamodel.length === 0) {
-            return res.status(404).json({ message: "No Panna models found for the given market ID." });
+            return res.status(404).json({ message: "No Panna models found for the given user ID." });
         }
+
+        const marketIds = Pannamodel.map(panna => panna.marketId); // Get an array of marketIds
+        const markets = await Marketing.find({ _id: { $in: marketIds } }).select('name type'); // Fetch only name and type
+
+        // Create a mapping of markets by ID
+        const marketMap = {};
+        markets.forEach(market => {
+            marketMap[market._id] = { name: market.name, type: market.type }; // Map market_name and market_type by market ID
+        });
+
+
+        // Combine Pannamodels with their corresponding market and Sangam data
+        const combinedResults = Pannamodel.map(panna => ({
+            win_manage: panna.win_manage,
+            win_amount: panna.win_amount,
+            betdate: panna.betdate,
+            session: panna.session,
+            type: panna.type,
+            bit_number: panna.bit_number,
+            marketName: marketMap[panna.marketId]?.name || null, // Add market name
+            marketType: marketMap[panna.marketId]?.type || null, // Add market type
+        }));
+
         return res.status(200).json({
             status: 200,
             message: "Result fetched successfully.",
-            data: Pannamodel
+            data: combinedResults
         });
 
     } catch (error) {
@@ -262,3 +283,8 @@ exports.ResultUser = async (req, res) => {
         res.status(500).json({ message: "An error occurred while fetching the result." });
     }
 };
+
+
+
+
+

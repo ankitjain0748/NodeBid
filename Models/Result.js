@@ -37,8 +37,9 @@ const resultmongoose = mongoose.Schema({
     result :{
         type :String
     },
-    amount :{
-        type :Number
+    win_amount :{
+        type :Number,
+        default : 0
     },
     win_manage: {
         type: String

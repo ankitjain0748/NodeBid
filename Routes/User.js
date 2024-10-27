@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { validateToken, signup, login, getotpsingup, userlist,Sublogin, user,updateUserStatus, resetMpin, userlistStatus, UserListId, UserListIdDelete, ProfileAdd } = require("../Controller/UserController");
+const { validateToken, signup, login, getotpsingup, userlist,Sublogin, user,updateUserStatus, resetMpin, userlistStatus, UserListId, UserListIdDelete, ProfileAdd, Setting } = require("../Controller/UserController");
 const Profile = require("../Models/Profile");
 
 // User Signup Route
@@ -27,6 +27,7 @@ router.post("/reset-mpin", resetMpin)
 router.post("/delete", UserListIdDelete)
 
 router.post("/profile", validateToken, ProfileAdd)
+router.get("/setting", Setting)
 
 router.post("/Sublogin", Sublogin)
 
