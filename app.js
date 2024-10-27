@@ -5,6 +5,7 @@ const user = require("./Models/SignUp")
 const Marketing = require("./Models/Marketing")
 const widthrwalModel = require("./Models/Widthwral")
 const profile = require("./Models/Profile")
+const userModel = require("./Models/SignUp")
 const express = require('express');
 const apiroute = require('./Routes/ContactUs');
 const userroute = require("./Routes/User")
@@ -50,11 +51,15 @@ app.get('/api/user-stats', async (req, res) => {
     const paymentsucees = await widthrwalModel.countDocuments({ payment_status: 1 });
     const paymentwidthrwal = await widthrwalModel.countDocuments({ payment_status: 0 });
     const ProfileData = await profile.find({});
+    const UserData = await userModel.find({role :"subadmin"});
+
+    
     const approvedUsers = await user.countDocuments({ user_status: 'active' });
     const unapprovedUsers = await user.countDocuments({ user_status: 'inactive' });
 
     res.json({
       ProfileData,
+      UserData,
       paymentsucees,
       totalUsers,
       approvedUsers,

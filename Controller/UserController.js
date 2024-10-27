@@ -151,12 +151,10 @@ const Sublogin = catchAsync(async (req, res, next) => {
             });
         }
 
-        // Construct the update object with only the provided fields
         const updateFields = {};
         if (phone) updateFields.phone = phone;
         if (mpin) updateFields.mpin = mpin;
 
-        // Ensure at least one of phone or mpin is provided to update
         if (Object.keys(updateFields).length === 0) {
             return res.status(400).json({
                 status: false,
