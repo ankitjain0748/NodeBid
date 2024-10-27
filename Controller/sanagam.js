@@ -89,7 +89,7 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         res.status(201).json({
             data: record,
             status: true,
-            message: `${type?.replace("_" ," ")} Bid successfully.`,
+            message: `${type?.replace("_", " ")} Bid successfully.`,
         });
 
     } catch (error) {

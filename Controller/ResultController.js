@@ -91,7 +91,7 @@ exports.ResultAdd = async (req, res) => {
         const { session, number, betdate, marketId, bit_number } = req.body;
 
         console.log("req.body", req.body);
-        
+
         // If bit_number is not provided, generate a default one
         const generatedBitNumber = bit_number || Math.floor(100000 + Math.random() * 900000); // 6-digit random number
 
@@ -109,7 +109,7 @@ exports.ResultAdd = async (req, res) => {
         // Initialize result data
         const resultData = {
             session,
-            result: null, 
+            result: null,
             number,
             betdate,
             marketId,
@@ -219,11 +219,11 @@ exports.ResultAddMarket = async (req, res) => {
             return res.status(400).json({ message: "Market ID is required." });
         }
 
-        const Pannamodel = await ResultModel.find({marketId});
+        const Pannamodel = await ResultModel.find({ marketId });
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found for the given market ID." });
         }
-     
+
 
         return res.status(200).json({
             status: 200,
@@ -248,12 +248,12 @@ exports.ResultUser = async (req, res) => {
         }
 
         // Fetching Panna models based on marketId
-        const Pannamodel = await ResultModel.find({userId});
+        const Pannamodel = await ResultModel.find({ userId });
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found for the given market ID." });
         }
 
-     
+
 
 
         return res.status(200).json({

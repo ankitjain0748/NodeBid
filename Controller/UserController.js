@@ -13,10 +13,6 @@ const AppError = require("../utils/AppError");
 const Profile = require("../Models/Profile");
 
 // Sign Token
-// const signToken = async (payload) => {
-//     const token = jwt.sign(payload, SECRET_ACCESS, { expiresIn: "5h" });
-//     return token;
-// };
 
 const signToken = async (payload) => {
     const token = jwt.sign(payload, SECRET_ACCESS, { expiresIn: "8760h" });

@@ -8,7 +8,6 @@ exports.pannaAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
         const { type, status, date, digit, point, marketId, sangam_type } = req.body;
-
         // User ID validation
         if (!userId) {
             return res.status(400).json({

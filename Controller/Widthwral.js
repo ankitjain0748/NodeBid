@@ -6,7 +6,6 @@ const successAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
         const { transcation_id, amount } = req.body;
-
         if (!userId) {
             return res.status(400).json({
                 message: "User information not found in the request or userId is undefined",
