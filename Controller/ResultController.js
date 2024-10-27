@@ -109,7 +109,7 @@ exports.ResultAdd = async (req, res) => {
         // Initialize result data
         const resultData = {
             session,
-            result: null, // Initialize the result field
+            result: null, 
             number,
             betdate,
             marketId,

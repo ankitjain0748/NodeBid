@@ -422,7 +422,8 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
             Withrawal,
             App_link,
             message,
-            Video_link } = req.body;
+            Video_link
+        } = req.body;
 
         if (!userId) {
             return res.status(400).json({
@@ -439,7 +440,8 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
                 status: false,
             });
         }
-        const record = new profile({
+
+        const record = new Profile({
             Profile_name,
             Upi_id,
             whatapps,
@@ -459,10 +461,14 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
 
         await record.save();
 
+        // Perform the secondary update on the User model here
+        user.profileCreated = true; // Example: Update the user's profileCreated status
+        await user.save();
+
         res.status(200).json({
             status: true,
             data: record,
-            message: "Profile record added successfully.",
+            message: "Profile record added and user data updated successfully.",
         });
     } catch (error) {
         console.error("Error adding Profile record:", error);
@@ -475,11 +481,12 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
 
 
 
+
 const Setting = catchAsync(async (req, res) => {
     try {
-        const profile = await Profile.find({  });
+        const profile = await Profile.find({});
 
-      
+
 
         res.status(200).json({
             status: true,
@@ -493,7 +500,7 @@ const Setting = catchAsync(async (req, res) => {
         });
     }
 });
- 
+
 
 
 module.exports = {

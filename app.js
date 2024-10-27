@@ -1,6 +1,10 @@
 const dotenv = require("dotenv");
 require("./utils/mongoconfig");
 dotenv.config();
+const user = require("./Models/SignUp")
+const Marketing = require("./Models/Marketing")
+const widthrwalModel = require("./Models/Widthwral")
+const profile = require("./Models/Profile")
 const express = require('express');
 const apiroute = require('./Routes/ContactUs');
 const userroute = require("./Routes/User")
@@ -38,7 +42,31 @@ app.use("/payment", widthrwal)
 app.use("/market", marketing)
 app.use("/result", resultroute)
 
+app.get('/api/user-stats', async (req, res) => {
+  try {
+    const totalUsers = await user.countDocuments();
+    const totalMarketings = await Marketing.countDocuments();
+    const widthrwalModels = await widthrwalModel.countDocuments();
+    const paymentsucees = await widthrwalModel.countDocuments({ payment_status: 1 });
+    const paymentwidthrwal = await widthrwalModel.countDocuments({ payment_status: 0 });
+    const ProfileData = await profile.find({});
+    const approvedUsers = await user.countDocuments({ user_status: 'active' });
+    const unapprovedUsers = await user.countDocuments({ user_status: 'inactive' });
 
+    res.json({
+      ProfileData,
+      paymentsucees,
+      totalUsers,
+      approvedUsers,
+      totalMarketings,
+      paymentwidthrwal,
+      widthrwalModels,
+      unapprovedUsers,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error retrieving user statistics' });
+  }
+});
 
 // Start server
 const PORT = process.env.PORT || 5000;
