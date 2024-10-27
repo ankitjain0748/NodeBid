@@ -1,48 +1,25 @@
-const sanagam = require("../Models/Sangam");
+const Sangam = require("../Models/Sangam");
 const User = require("../Models/SignUp")
 const moment = require('moment');
 const GameRate = require("../Models/GameRate")
 const catchAsync = require("../utils/catchAsync");
 
 
+const sumOfDigits = (number) => {
+    return number.toString().split('').reduce((sum, digit) => sum + Number(digit), 0);
+};
+
 exports.SangamAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
+        console.log("Sangam",Sangam)
         const { type, status, date, open_panna, close_panna, bid_point, marketId } = req.body;
-
-        // User ID validation
         if (!userId) {
             return res.status(400).json({
                 message: "User information not found in the request or userId is undefined.",
                 status: false,
             });
         }
-
-        // Required fields validation
-        // if (!type || !status || !date || !open_panna || !close_panna || !bid_point) {
-        //     return res.status(400).json({
-        //         status: false,
-        //         message: "All fields are required!",
-        //     });
-        // }
-
-        // Validate the type and corresponding open_panna and close_panna fields
-        // if (type === "half_sangam" || type === "full_sangam") {
-        //     const pannaPattern = /^\d{3}$/; // three-digit number validation (000-999)
-        //     if (!pannaPattern.test(open_panna)) {
-        //         return res.status(400).json({
-        //             status: false,
-        //             message: `For type '${type}', open_panna and close_panna must both be three-digit numbers (000-999).`,
-        //         });
-        //     }
-        // } else {
-        //     return res.status(400).json({
-        //         status: false,
-        //         message: "Invalid type provided!",
-        //     });
-        // }
-
-        // Parse the date with moment.js and validate
         const parsedDate = moment(date, "DD-MM-YYYY", true);
         if (!parsedDate.isValid()) {
             return res.status(400).json({
@@ -71,13 +48,19 @@ exports.SangamAdd = catchAsync(async (req, res, next) => {
         user.amount -= bid_point;
         await user.save();
 
-        // Create and save the new record
-        const record = new sanagam({
+        // Calculate the sum of digits for open_panna and close_panna
+        const openDigitSum = sumOfDigits(open_panna);
+        const closeDigitSum = sumOfDigits(close_panna);
+
+        // Create and save the new record with summed values
+        const record = new Sangam({
             type,
             status,
             date: parsedDate, // Adjust date as per requirement
-            open_panna,
-            close_panna,
+            open_panna: open_panna, // Store the original value
+            open_digit: openDigitSum, // Store the sum of the digits of open_panna
+            close_panna: close_panna, // Store close_panna directly to close_digit
+            close_digit: closeDigitSum, // Store the sum of the digits of close_panna
             bid_point,
             userId,
             marketId,

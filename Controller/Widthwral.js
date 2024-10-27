@@ -171,13 +171,9 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
 const adminwithdrawalAdd = catchAsync(async (req, res, next) => {
     try {
         const { user_id, amount } = req.body;
-
-
         if (!user_id || !amount) {
             return res.status(400).json({ message: "All fields are required!" });
         }
-
-        // Retrieve the user's account information
         const user = await User.findById({ _id: user_id });
 
         if (!user) {

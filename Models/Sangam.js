@@ -9,6 +9,12 @@ const sangamschema = mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    open_digit:{
+        type:Number
+    },
+    close_digit:{
+        type:Number
+    },
     marketId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'marketing'  // Reference to the User model

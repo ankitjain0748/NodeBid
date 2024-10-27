@@ -212,30 +212,23 @@ exports.ResultAddMarket = async (req, res) => {
             return res.status(400).json({ message: "Market ID is required." });
         }
 
-        // Fetch market data using marketId
-        const market = await Market.findById(marketId); // Assuming marketId is the document ID
+        const market = await Market.findById(marketId); 
 
         if (!market) {
             return res.status(404).json({ message: "Market not found." });
         }
 
-        // Fetch results from both Panna and Sanagam models using marketId
-        const [PannaData, SanagamData] = await Promise.all([
-            Panna.find({ marketId }),  // Assuming ResultModel is used for both Panna and Sanagam
-            Sangam.find({ marketId }) // Fetching from SanagamModel
-        ]);
+        const sangamData = await Sangam.find({ marketId }); 
 
-        // Combine data into a single object
         const combinedData = {
-            marketName: market.name, // Assuming the market has a name field
-            panna: PannaData,
-            sanagam: SanagamData
+            marketName: market.name, 
+            sangam: sangamData 
         };
 
         return res.status(200).json({
             status: 200,
             message: "Result fetched successfully.",
-            data: combinedData // Returning combined data
+            data: combinedData 
         });
 
     } catch (error) {
@@ -243,6 +236,7 @@ exports.ResultAddMarket = async (req, res) => {
         res.status(500).json({ message: "An error occurred while fetching the result." });
     }
 };
+
 
 
 
