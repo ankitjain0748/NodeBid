@@ -247,8 +247,9 @@ const UserListId = catchAsync(async (req, res) => {
         }
 
         const record = await User.findById(id);
-        const payment = await Payment.find({ user_id: id });
-
+        const payment = await Payment.find({ user_id: id , payment_status :1});
+        const userpayment = await Payment.find({ user_id: id , payment_status :0});
+console.log("userpayment",userpayment)
         if (!record) {
             return res.status(404).json({
                 status: false,
@@ -258,6 +259,7 @@ const UserListId = catchAsync(async (req, res) => {
         res.status(200).json({
             status: true,
             data: record,
+            userpayment,userpayment,
             payment: payment,
             message: "User fetched successfully.",
         });
@@ -490,6 +492,21 @@ const Setting = catchAsync(async (req, res) => {
     }
 });
 
+const SubAdmin = catchAsync(async (req, res) => {
+    try {
+        const profile = await User.find({role :"subadmin"});
+        res.status(200).json({
+            status: true,
+            data: profile,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+        });
+    }
+});
 
 
 module.exports = {
@@ -501,6 +518,7 @@ module.exports = {
     ProfileAdd,
     UserListIdDelete,
     validateToken,
+    SubAdmin,
     updateUserStatus,
     userlist,
     Setting,

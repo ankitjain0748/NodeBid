@@ -1,17 +1,19 @@
-const withdrawal = require("../Models/Widthwral");
 const User = require("../Models/SignUp");
+const withdrawal = require("../Models/Widthwral");
 const catchAsync = require("../utils/catchAsync");
 
 const successAdd = catchAsync(async (req, res, next) => {
     try {
         const userId = req?.user?._id;
         const { transcation_id, amount } = req.body;
+
         if (!userId) {
             return res.status(400).json({
                 message: "User information not found in the request or userId is undefined",
                 status: false,
             });
         }
+
         if (!transcation_id || !amount) {
             return res.status(400).json({ message: "All fields are required!" });
         }
@@ -25,6 +27,23 @@ const successAdd = catchAsync(async (req, res, next) => {
                 status: false,
             });
         }
+        const users = await User.findOne({ role: "admin" });
+
+        // Check if the user is an admin
+        if (users.role !== "admin") {
+            return res.status(403).json({
+                message: "Only admin users can perform this transaction",
+                status: false,
+            });
+        }
+
+        // Check if the amount meets the minimum deposit rate
+        if (amount < users.min_desposite_rate) {
+            return res.status(400).json({
+                message: `Deposit amount must be at least ${users.min_desposite_rate}`,
+                status: false,
+            });
+        }
 
         // Add the transaction amount to the user's balance
         user.amount = (user.amount || 0) + amount;
@@ -35,7 +54,7 @@ const successAdd = catchAsync(async (req, res, next) => {
             transcation_id,
             amount,
             user_id: userId,
-            payment_status: 1
+            payment_status: 1,
         });
         await record.save();
 
@@ -45,8 +64,8 @@ const successAdd = catchAsync(async (req, res, next) => {
             message: "Transaction successful, amount added to balance",
         });
     } catch (error) {
-        console.error(error); // Log the error for debugging
-        res.status(false).json({ message: "Internal Server Error" });
+        console.error("Error in transaction:", error); // Log the error for debugging
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
@@ -128,6 +147,23 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
             });
         }
 
+        const users = await User.findOne({ role: "admin" });
+
+        // Check if the user is an admin
+        if (users.role !== "admin") {
+            return res.status(403).json({
+                message: "Only admin users can perform this transaction",
+                status: false,
+            });
+        }
+
+        // Check if the amount meets the minimum deposit rate
+        if (amount < users.min_widthrawal_rate) {
+            return res.status(400).json({
+                message: `Deposit amount must be at least ${users.min_widthrawal_rate}`,
+                status: false,
+            });
+        }
         // Check if the user has an amount key
         if (typeof user.amount === 'undefined') {
             return res.status(400).json({
@@ -151,6 +187,7 @@ const withdrawalAdd = catchAsync(async (req, res, next) => {
         const record = new withdrawal({
             upi_id,
             amount,
+            payment_Wid_status:"inactive",
             user_id: userId,
             payment_status: 0,
         });
@@ -245,8 +282,34 @@ const amountget = catchAsync(async (req, res) => {
     }
 });
 
+const WidthrawalRate = catchAsync(async (req, res) => {
+    try {
+
+        const records = await withdrawal.find({payment_status : 0});
+        if (!records || records.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "No records found",
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            data: records,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        });
+    }
+});
+
+
 
 module.exports = {
+    WidthrawalRate,
     withdrawalAdd,
     successAdd,
     amountget,

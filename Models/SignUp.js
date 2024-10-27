@@ -9,6 +9,7 @@ const signupSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  Profile_name: String,
   username: {
     type: String,
     required: true,

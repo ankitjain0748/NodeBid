@@ -13,6 +13,8 @@ router.post("/success/data", withdrawaldata.AdminsuccessAdd)
 
 
 router.post("/success", validateToken, withdrawaldata.successAdd)
+router.get("/widtrawalreq", withdrawaldata.WidthrawalRate)
+
 
 router.get("/receive", validateToken, withdrawaldata.amountget)
 

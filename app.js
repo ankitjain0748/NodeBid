@@ -50,10 +50,9 @@ app.get('/api/user-stats', async (req, res) => {
     const widthrwalModels = await widthrwalModel.countDocuments();
     const paymentsucees = await widthrwalModel.countDocuments({ payment_status: 1 });
     const paymentwidthrwal = await widthrwalModel.countDocuments({ payment_status: 0 });
-    const ProfileData = await profile.find({});
     const UserData = await userModel.find({role :"subadmin"});
+    const ProfileData = await userModel.find({role :"admin"});
 
-    
     const approvedUsers = await user.countDocuments({ user_status: 'active' });
     const unapprovedUsers = await user.countDocuments({ user_status: 'inactive' });
 
