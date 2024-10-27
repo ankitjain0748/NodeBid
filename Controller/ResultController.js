@@ -122,31 +122,26 @@ exports.ResultAdd = async (req, res) => {
 
         let pannaWin = false;
         let sangamWin = false;
-
-        // Check Panna models
         for (const panna of Pannamodel) {
             if ((session === 'open' && panna.status === true) || (session === 'close' && panna.status === false)) {
                 if (panna.point === sumOfDigits) {
                     resultData.panaaModal = panna;
                     resultData.userId = panna.userId;
-                    resultData.result = panna.marketId.result; // Assign result key from Panna's marketId
+                    resultData.result = panna.marketId.result;
                     pannaWin = true;
                     break; // No need to keep checking if we found a match
                 }
             }
         }
 
-        // Check Sangam models if Panna didn't have a winner
-        if (!pannaWin) {
-            for (const sangam of SangamModel) {
-                if ((session === 'open' && sangam.status === true) || (session === 'close' && sangam.status === false)) {
-                    if (sangam.bid_point === number) {
-                        resultData.sangamModal = sangam;
-                        resultData.userId = sangam.userId;
-                        resultData.result = sangam.marketId.result; // Assign result key from Sangam's marketId
-                        sangamWin = true;
-                        break; // No need to keep checking if we found a match
-                    }
+        for (const sangam of SangamModel) {
+            if ((session === 'open' && sangam.status === true) || (session === 'close' && sangam.status === false)) {
+                if (sangam.bid_point === number) {
+                    resultData.sangamModal = sangam;
+                    resultData.userId = sangam.userId;
+                    resultData.result = sangam.marketId.result; // Assign result key from Sangam's marketId
+                    sangamWin = true;
+                    break; // No need to keep checking if we found a match
                 }
             }
         }
@@ -155,8 +150,6 @@ exports.ResultAdd = async (req, res) => {
         if (pannaWin || sangamWin) {
             resultData.win_manage = "winner";
         }
-
-        // Save the result if any winning condition is met
         if (resultData.panaaModal || resultData.sangamModal) {
             const data = new ResultModel(resultData);
             const savedResult = await data.save();
@@ -212,23 +205,37 @@ exports.ResultList = catchAsync(async (req, res) => {
 
 exports.ResultAddMarket = async (req, res) => {
     try {
-        console.log(req.body)
+        console.log(req.body);
         const { marketId } = req.body;
 
         if (!marketId) {
             return res.status(400).json({ message: "Market ID is required." });
         }
 
-        const Pannamodel = await ResultModel.find({ marketId });
-        if (!Pannamodel || Pannamodel.length === 0) {
-            return res.status(404).json({ message: "No Panna models found for the given market ID." });
+        // Fetch market data using marketId
+        const market = await Market.findById(marketId); // Assuming marketId is the document ID
+
+        if (!market) {
+            return res.status(404).json({ message: "Market not found." });
         }
 
+        // Fetch results from both Panna and Sanagam models using marketId
+        const [PannaData, SanagamData] = await Promise.all([
+            Panna.find({ marketId }),  // Assuming ResultModel is used for both Panna and Sanagam
+            Sangam.find({ marketId }) // Fetching from SanagamModel
+        ]);
+
+        // Combine data into a single object
+        const combinedData = {
+            marketName: market.name, // Assuming the market has a name field
+            panna: PannaData,
+            sanagam: SanagamData
+        };
 
         return res.status(200).json({
             status: 200,
             message: "Result fetched successfully.",
-            data: Pannamodel
+            data: combinedData // Returning combined data
         });
 
     } catch (error) {
@@ -244,18 +251,12 @@ exports.ResultUser = async (req, res) => {
         const { userId } = req.body;
 
         if (!userId) {
-            return res.status(400).json({ message: "Market ID is required." });
+            return res.status(400).json({ message: "User ID is required." });
         }
-
-        // Fetching Panna models based on marketId
         const Pannamodel = await ResultModel.find({ userId });
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found for the given market ID." });
         }
-
-
-
-
         return res.status(200).json({
             status: 200,
             message: "Result fetched successfully.",

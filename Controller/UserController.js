@@ -425,47 +425,29 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
                 status: false,
             });
         }
-
-        const user = await User.findById({ _id: userId });
-
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found",
-                status: false,
-            });
-        }
-
-        const record = new Profile({
-            Profile_name,
-            Upi_id,
-            whatapps,
-            phone,
-            profile_email,
-            marchant_id,
-            min_widthrawal_rate,
-            min_desposite_rate,
-            min_bid_amount,
-            welcome_bouns,
-            Withrawal,
-            App_link,
-            message,
-            Video_link,
-            userId: userId
-        });
-
-        await record.save();
-
-        // Perform the secondary update on the User model here
-        user.profileCreated = true; // Example: Update the user's profileCreated status
-        await user.save();
-
-        res.status(200).json({
+        profile.Profile_name = Profile_name;
+        profile.Upi_id = Upi_id;
+        profile.whatapps = whatapps;
+        profile.phone = phone;
+        profile.profile_email = profile_email;
+        profile.marchant_id = marchant_id;
+        profile.min_widthrawal_rate = min_widthrawal_rate;
+        profile.min_desposite_rate = min_desposite_rate;
+        profile.min_bid_amount = min_bid_amount;
+        profile.welcome_bouns = welcome_bouns;
+        profile.Withrawal = Withrawal;
+        profile.App_link = App_link;
+        profile.message = message;
+        profile.Video_link = Video_link;
+        await profile.save();
+        return res.status(200).json({
             status: true,
-            data: record,
-            message: "Profile record added and user data updated successfully.",
+            data: profile,
+            message: "Profile updated successfully.",
         });
+
     } catch (error) {
-        console.error("Error adding Profile record:", error);
+        console.error("Error updating Profile record:", error);
         res.status(500).json({
             status: false,
             message: "Internal Server Error. Please try again later.",
@@ -479,9 +461,6 @@ const ProfileAdd = catchAsync(async (req, res, next) => {
 const Setting = catchAsync(async (req, res) => {
     try {
         const profile = await Profile.find({});
-
-
-
         res.status(200).json({
             status: true,
             data: profile,
