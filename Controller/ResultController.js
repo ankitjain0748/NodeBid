@@ -267,6 +267,8 @@ exports.ResultUser = async (req, res) => {
         const combinedResults = Pannamodel.map(panna => {
             // Join points into a single string, separated by commas
             const pointsString = panna.panaaModal.map(modal => modal.point).join(', ');
+            const pointsStype = panna.panaaModal.map(modal => modal.type).join(', ');
+
 
             return {
                 win_manage: panna.win_manage,
@@ -276,7 +278,7 @@ exports.ResultUser = async (req, res) => {
                 bit_number: panna.bit_number,
                 bid_point: pointsString, // Concatenated points string
                 marketName: marketMap[panna.marketId]?.name || null,
-                marketType: marketMap[panna.marketId]?.type || null,
+                marketType: pointsStype|| null,
             };
         });
 
