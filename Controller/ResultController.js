@@ -247,10 +247,6 @@ exports.ResultUser = async (req, res) => {
         const Pannamodel = await ResultModel.find({ userId }).select('win_manage betdate session bit_number marketId win_amount panaaModal');
 
         console.log(Pannamodel);
-        if (!Pannamodel || Pannamodel.length === 0) {
-            return res.status(404).json({ message: "No Panna models found for the given user ID." });
-        }
-
         const marketIds = Pannamodel.map(panna => panna.marketId);
         console.log("marketIds", marketIds);
 
@@ -269,7 +265,6 @@ exports.ResultUser = async (req, res) => {
             const pointsString = panna.panaaModal.map(modal => modal.point).join(', ');
             const pointsStype = panna.panaaModal.map(modal => modal.type).join(', ');
 
-
             return {
                 win_manage: panna.win_manage,
                 win_amount: panna.win_amount,
@@ -278,12 +273,21 @@ exports.ResultUser = async (req, res) => {
                 bit_number: panna.bit_number,
                 bid_point: pointsString, // Concatenated points string
                 marketName: marketMap[panna.marketId]?.name || null,
-                marketType: pointsStype|| null,
+                marketType: pointsStype || null,
             };
         });
 
+        // Check if results are found
+        if (combinedResults.length === 0) {
+            return res.status(200).json({
+                status: false,
+                message: "No results found.",
+                data: []
+            });
+        }
+
         return res.status(200).json({
-            status: 200,
+            status: true,
             message: "Result fetched successfully.",
             data: combinedResults
         });
@@ -293,6 +297,7 @@ exports.ResultUser = async (req, res) => {
         res.status(500).json({ message: "An error occurred while fetching the result." });
     }
 };
+
 
 
 
