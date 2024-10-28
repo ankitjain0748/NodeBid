@@ -244,33 +244,41 @@ exports.ResultUser = async (req, res) => {
             return res.status(400).json({ message: "User ID is required." });
         }
 
-        const Pannamodel = await ResultModel.find({ userId }).select('win_manage betdate session type bit_number marketId win_amount');
+        const Pannamodel = await ResultModel.find({ userId }).select('win_manage betdate session bit_number marketId win_amount panaaModal');
 
+        console.log(Pannamodel);
         if (!Pannamodel || Pannamodel.length === 0) {
             return res.status(404).json({ message: "No Panna models found for the given user ID." });
         }
 
-        const marketIds = Pannamodel.map(panna => panna.marketId); // Get an array of marketIds
-        const markets = await Marketing.find({ _id: { $in: marketIds } }).select('name type'); // Fetch only name and type
+        const marketIds = Pannamodel.map(panna => panna.marketId);
+        console.log("marketIds", marketIds);
+
+        const markets = await Marketing.find({ _id: { $in: marketIds } }).select('name type');
+        console.log(markets);
 
         // Create a mapping of markets by ID
         const marketMap = {};
         markets.forEach(market => {
-            marketMap[market._id] = { name: market.name, type: market.type }; // Map market_name and market_type by market ID
+            marketMap[market._id] = { name: market.name, type: market.type };
         });
 
+        // Combine Pannamodels with their corresponding market and extract points from panaaModal
+        const combinedResults = Pannamodel.map(panna => {
+            // Join points into a single string, separated by commas
+            const pointsString = panna.panaaModal.map(modal => modal.point).join(', ');
 
-        // Combine Pannamodels with their corresponding market and Sangam data
-        const combinedResults = Pannamodel.map(panna => ({
-            win_manage: panna.win_manage,
-            win_amount: panna.win_amount,
-            betdate: panna.betdate,
-            session: panna.session,
-            type: panna.type,
-            bit_number: panna.bit_number,
-            marketName: marketMap[panna.marketId]?.name || null, // Add market name
-            marketType: marketMap[panna.marketId]?.type || null, // Add market type
-        }));
+            return {
+                win_manage: panna.win_manage,
+                win_amount: panna.win_amount,
+                betdate: panna.betdate,
+                session: panna.session,
+                bit_number: panna.bit_number,
+                bid_point: pointsString, // Concatenated points string
+                marketName: marketMap[panna.marketId]?.name || null,
+                marketType: marketMap[panna.marketId]?.type || null,
+            };
+        });
 
         return res.status(200).json({
             status: 200,
@@ -283,6 +291,8 @@ exports.ResultUser = async (req, res) => {
         res.status(500).json({ message: "An error occurred while fetching the result." });
     }
 };
+
+
 
 
 
