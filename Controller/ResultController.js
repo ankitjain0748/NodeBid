@@ -108,7 +108,7 @@ exports.ResultAdd = async (req, res) => {
             marketId,
             bit_number: generatedBitNumber,
             panaaModal: null,
-            win_amount :0,
+            win_amount: 0,
             sangamModal: null,
             userId: null, // This should be set during the matching process
             win_manage: "loser", // Default value is loser
@@ -208,23 +208,23 @@ exports.ResultAddMarket = async (req, res) => {
             return res.status(400).json({ message: "Market ID is required." });
         }
 
-        const market = await Market.findById(marketId); 
+        const market = await Market.findById(marketId);
 
         if (!market) {
             return res.status(404).json({ message: "Market not found." });
         }
 
-        const sangamData = await Sangam.find({ marketId }); 
+        const sangamData = await Sangam.find({ marketId });
 
         const combinedData = {
-            marketName: market.name, 
-            sangam: sangamData 
+            marketName: market.name,
+            sangam: sangamData
         };
 
         return res.status(200).json({
             status: 200,
             message: "Result fetched successfully.",
-            data: combinedData 
+            data: combinedData
         });
 
     } catch (error) {
